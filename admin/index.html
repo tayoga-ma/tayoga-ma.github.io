@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>TAYOGA — Admin</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#131824">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TAYOGA Admin">
+<style>
+:root{--bg:#0b0e14;--s1:#131824;--s2:#1a2030;--s3:#232a3c;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);--tx:#eef2f8;--dim:#8b96aa;--g:#4ade80;--b:#60a5fa;--r:#f87171;--o:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif}
+.app{display:flex;min-height:100vh}
+.nav{width:230px;flex:none;background:var(--s1);border-inline-end:1px solid var(--bd);padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.brand{font-weight:900;font-size:21px;direction:ltr;text-align:center;margin:4px 0 2px}.brand span{color:var(--g)}
+.role{text-align:center;font-size:11.5px;color:var(--dim);margin-bottom:16px}
+.nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:11px;color:#cbd5e1;text-decoration:none;cursor:pointer;font-size:14.5px}
+.nav a.on{background:rgba(74,222,128,.12);color:var(--g);font-weight:700}
+.nav a .c{margin-inline-start:auto;font-size:11px;background:var(--s3);border-radius:999px;padding:1px 8px;color:var(--dim)}
+.nav .me{margin-top:auto;padding:10px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--dim);display:flex;flex-direction:column;gap:8px}
+.lnk{background:none;border:0;color:var(--b);font:inherit;font-size:12.5px;cursor:pointer;padding:0;text-align:start}
+main{flex:1;min-width:0;padding:22px 26px 40px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+h1{margin:0;font-size:24px}
+.top .sp{flex:1}
+.sub{color:var(--dim);font-size:13.5px;margin:4px 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.kpi small{color:var(--dim);font-size:12.5px}.kpi b{display:block;font-size:28px;margin-top:4px}
+.kpi.w b{color:var(--o)}.kpi.g b{color:var(--g)}
+.box{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:6px 14px 10px;margin-bottom:16px;overflow-x:auto}
+.box h3{margin:10px 0 6px;font-size:15px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{color:var(--dim);font-weight:600;text-align:start;padding:9px 8px;border-bottom:1px solid var(--bd);font-size:12.5px;white-space:nowrap}
+td{padding:10px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr.ck{cursor:pointer}tbody tr.ck:hover{background:rgba(255,255,255,.03)}
+.empty{color:var(--dim);padding:14px 8px}
+small.d{color:var(--dim);font-size:12px}
+.mono{direction:ltr;unicode-bidi:isolate;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.pill{font-size:11.5px;border-radius:999px;padding:2px 9px;font-weight:700;white-space:nowrap;display:inline-block}
+.pill.g{background:rgba(74,222,128,.14);color:var(--g)}.pill.o{background:rgba(251,146,60,.14);color:var(--o)}.pill.r{background:rgba(248,113,113,.14);color:var(--r)}.pill.d{background:var(--s3);color:var(--dim)}.pill.b{background:rgba(96,165,250,.14);color:var(--b)}
+.btn{border:0;border-radius:11px;padding:9px 14px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.g{background:#22c55e;color:#06210f}.btn.o{background:none;border:1px solid var(--bd2);color:var(--tx)}.btn.r{background:rgba(248,113,113,.14);color:var(--r);border:1px solid rgba(248,113,113,.35)}
+.search{width:320px;max-width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:11px;padding:9px 12px;color:var(--tx);font:inherit;font-size:13.5px}
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}.bar .sp{flex:1}
+.drawer{position:fixed;top:0;bottom:0;inset-inline-start:0;width:460px;max-width:100%;background:var(--s1);border-inline-end:1px solid var(--bd2);box-shadow:0 0 40px rgba(0,0,0,.5);transform:translateX(105%);transition:transform .25s,visibility .25s;padding:20px;overflow:auto;z-index:5}
+[dir=ltr] .drawer{transform:translateX(-105%)}
+.drawer:not(.open){visibility:hidden}
+.drawer.open{transform:none!important}
+.drawer h2{margin:0 40px 4px 0;font-size:19px}
+[dir=rtl] .drawer h2{margin:0 0 4px 40px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--bd);font-size:13.5px}
+.kv span{color:var(--dim)}.kv b{text-align:end;word-break:break-word}
+.kv.ck{cursor:pointer}
+.sec{font-size:12px;color:var(--dim);margin:18px 0 6px;font-weight:600}
+.x{position:absolute;top:14px;inset-inline-end:14px;background:var(--s3);border:0;color:var(--tx);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:16px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+.modal.open{display:flex}
+.mbox{background:var(--s1);border:1px solid var(--bd2);border-radius:18px;padding:20px;width:460px;max-width:100%;max-height:100%;overflow:auto}
+.mbox h3{margin:0 0 6px}.mbox p{color:var(--dim);font-size:13.5px;line-height:1.7;margin:0 0 10px}
+.lbl{font-size:12.5px;color:var(--dim);margin:10px 0 5px}
+.in{width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:11px;padding:10px 12px;color:var(--tx);font:inherit;font-size:14px}
+.in.mono{text-align:left}
+.cb{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:#cbd5e1;margin:8px 0;line-height:1.6}
+.row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.ok{background:rgba(74,222,128,.10);border:1px solid rgba(74,222,128,.35);color:#86efac;border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.65;margin:10px 0}
+.warn{background:rgba(251,146,60,.10);border:1px solid rgba(251,146,60,.35);color:#fdba74;border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.65;margin:10px 0}
+.err{background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.35);color:#fca5a5;border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.65;margin:10px 0}
+.page{display:none}.page.on{display:block}
+.tabs{display:none}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.lg{width:100%;max-width:380px;text-align:center;background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:28px 22px}
+.lg .logo{width:76px;height:76px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35)}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;color:#1f2937;border:0;border-radius:12px;padding:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:18px}
+.gbtn svg{width:20px;height:20px}
+.mask{cursor:pointer;border-bottom:1px dashed var(--bd2)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--bd2);border-radius:12px;padding:10px 16px;font-size:13.5px;z-index:20;display:none}
+.toast.on{display:block}
+@media(max-width:900px){
+  .nav{display:none}.kpis{grid-template-columns:repeat(2,1fr)}main{padding:14px 16px 90px}
+  .tabs{display:flex;position:fixed;bottom:0;left:0;right:0;padding-bottom:env(safe-area-inset-bottom);background:var(--s1);border-top:1px solid var(--bd);z-index:4}
+  .tabs a{flex:1;text-align:center;padding:9px 4px 11px;font-size:11.5px;color:var(--dim);cursor:pointer}
+  .tabs a.on{color:var(--g);font-weight:700}
+  .tabs a i{display:block;font-style:normal;font-size:18px}
+  .search{width:100%}
+  .hm{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="login" style="display:none"><div class="lg">
+  <div class="logo">💧</div>
+  <div class="brand">TAYOGA <span>AIT</span></div>
+  <div class="role" data-t="admin_page"></div>
+  <div id="lg-msg"></div>
+  <button class="gbtn" id="lg-g" onclick="signIn()"><svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg><span data-t="google"></span></button>
+  <button class="lnk" id="lg-out" style="display:none;margin-top:14px" onclick="signOut()" data-t="signout"></button>
+  <div style="margin-top:18px"><button class="lnk" onclick="toggleLang()">العربية / Français</button></div>
+</div></div>
+
+<div class="app" id="app" style="display:none">
+  <nav class="nav">
+    <div class="brand">TAYOGA <span>AIT</span></div>
+    <div class="role" data-t="admin_page"></div>
+    <a class="on" data-p="home">🏠 <span data-t="home"></span></a>
+    <a data-p="clients">👥 <span data-t="clients"></span> <span class="c" id="c-cl">0</span></a>
+    <a data-p="devices">📦 <span data-t="devices"></span> <span class="c" id="c-dv">0</span></a>
+    <a data-p="log">🧾 <span data-t="log"></span></a>
+    <div class="me"><div><span data-t="admin"></span><br><span class="mono" id="me-mail"></span></div>
+      <button class="lnk" onclick="toggleLang()">العربية / Français</button>
+      <button class="lnk" onclick="signOut()" data-t="signout"></button></div>
+  </nav>
+  <main>
+    <section class="page on" id="p-home">
+      <div class="top"><h1 data-t="home"></h1><span class="sp"></span><button class="btn o" onclick="load()">↻ <span class="hm" data-t="refresh"></span></button></div>
+      <p class="sub" id="home-sub"></p>
+      <div class="kpis">
+        <div class="kpi"><small data-t="k_accounts"></small><b id="k1">0</b></div>
+        <div class="kpi"><small data-t="k_places"></small><b id="k2">0</b></div>
+        <div class="kpi g"><small data-t="k_linked"></small><b id="k3" dir="ltr" style="text-align:start">0</b></div>
+        <div class="kpi w"><small data-t="k_free"></small><b id="k4">0</b></div>
+      </div>
+      <div class="box" id="b-attn"><h3>⚠️ <span data-t="attention"></span></h3><table><tbody id="t-attn"></tbody></table></div>
+      <div class="box"><h3>🆕 <span data-t="recent"></span></h3>
+        <table><thead><tr><th data-t="date"></th><th data-t="action"></th><th data-t="device"></th><th data-t="details"></th></tr></thead><tbody id="t-new"></tbody></table></div>
+    </section>
+
+    <section class="page" id="p-clients">
+      <div class="top"><h1 data-t="clients"></h1></div><p class="sub" data-t="clients_sub"></p>
+      <div class="bar"><input class="search" id="s-cl" oninput="renderClients()"></div>
+      <div class="box"><table><thead><tr><th data-t="client"></th><th data-t="phone"></th><th data-t="places"></th><th data-t="devices"></th><th data-t="since"></th></tr></thead><tbody id="t-clients"></tbody></table></div>
+    </section>
+
+    <section class="page" id="p-devices">
+      <div class="top"><h1 data-t="devices"></h1></div><p class="sub" data-t="devices_sub"></p>
+      <div class="bar"><input class="search" id="s-dv" oninput="renderDevices()"><span class="sp"></span><button class="btn g" onclick="openAdd()">＋ <span data-t="add_device"></span></button></div>
+      <div class="box"><table><thead><tr><th>ID</th><th data-t="place_client"></th><th data-t="state"></th><th data-t="fw"></th><th data-t="linked_on"></th></tr></thead><tbody id="t-devices"></tbody></table></div>
+    </section>
+
+    <section class="page" id="p-log">
+      <div class="top"><h1 data-t="log"></h1></div><p class="sub" data-t="log_sub"></p>
+      <div class="box"><table><thead><tr><th data-t="date"></th><th data-t="action"></th><th data-t="device"></th><th data-t="details"></th></tr></thead><tbody id="t-log"></tbody></table></div>
+    </section>
+  </main>
+  <div class="tabs">
+    <a class="on" data-p="home"><i>🏠</i><span data-t="home"></span></a>
+    <a data-p="clients"><i>👥</i><span data-t="clients"></span></a>
+    <a data-p="devices"><i>📦</i><span data-t="devices"></span></a>
+    <a data-p="log"><i>🧾</i><span data-t="log"></span></a>
+  </div>
+</div>
+
+<div class="drawer" id="dr"><button class="x" onclick="closeDr()">✕</button><div id="dr-c"></div></div>
+
+<div class="modal" id="m-unlink"><div class="mbox">
+  <h3>🔓 <span data-t="unlink_t"></span> <span class="mono" id="u-id"></span></h3>
+  <p data-t="unlink_p"></p>
+  <div class="cb"><input type="checkbox" id="u-c1" onchange="uChk()"><label for="u-c1" data-t="unlink_ck"></label></div>
+  <div class="lbl" data-t="reason"></div>
+  <input class="in" id="u-r" maxlength="200" oninput="uChk()">
+  <div id="u-msg"></div>
+  <div class="row"><button class="btn o" onclick="closeM()" data-t="cancel"></button><button class="btn r" id="u-go" disabled onclick="doUnlink()" data-t="unlink"></button></div>
+</div></div>
+
+<div class="modal" id="m-add"><div class="mbox">
+  <h3>＋ <span data-t="add_t"></span></h3>
+  <p data-t="add_p"></p>
+  <div class="lbl" data-t="add_id"></div><input class="in mono" id="a-id" maxlength="6" placeholder="A1B2C3" autocomplete="off" spellcheck="false">
+  <div class="lbl" data-t="add_key"></div><input class="in mono" id="a-key" type="password" maxlength="64" autocomplete="off" spellcheck="false">
+  <div class="lbl" data-t="note"></div><input class="in" id="a-note" maxlength="200">
+  <div class="warn" data-t="add_emqx"></div>
+  <div id="a-msg"></div>
+  <div class="row"><button class="btn o" onclick="closeM()" data-t="cancel"></button><button class="btn g" id="a-go" onclick="doAdd()" data-t="save_device"></button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="supabase.js"></script>
+<script>
+var SUPABASE_URL='https://xecfziyhfobdfxishcbf.supabase.co';
+var SUPABASE_KEY='sb_publishable_LKN_xeRiaDRPyKiuVfnSNQ_ghHqrEKC';
+
+var T={
+ admin_page:['صفحة المدير','Espace administrateur'],
+ google:['الدخول بحساب Google','Se connecter avec Google'],
+ signout:['تسجيل الخروج','Se déconnecter'],
+ admin:['المدير','Administrateur'],
+ home:['الرئيسية','Accueil'], clients:['الزبائن','Clients'], devices:['الأجهزة','Boîtiers'], log:['السجل','Journal'],
+ refresh:['تحديث','Actualiser'],
+ k_accounts:['الحسابات','Comptes'], k_places:['الأماكن','Lieux'], k_linked:['أجهزة مربوطة','Boîtiers reliés'], k_free:['أجهزة حرّة (المخزن)','Boîtiers libres (stock)'],
+ attention:['تحتاج انتباهًا','À surveiller'], recent:['آخر العمليات','Dernières opérations'],
+ date:['التاريخ','Date'], action:['العملية','Opération'], device:['الجهاز','Boîtier'], details:['التفاصيل','Détails'],
+ clients_sub:['كل حساب TAYOGA وأماكنه وأجهزته','Chaque compte TAYOGA, ses lieux et ses boîtiers'],
+ devices_sub:['الأجهزة المحضّرة في المخزن والمربوطة بالزبائن','Boîtiers préparés en stock et reliés aux clients'],
+ log_sub:['كل العمليات الحساسة: من، متى، ولماذا (آخر 300)','Toutes les opérations sensibles : qui, quand, pourquoi (300 dernières)'],
+ client:['الزبون','Client'], phone:['الهاتف','Téléphone'], places:['الأماكن','Lieux'], since:['منذ','Depuis'],
+ search_cl:['بحث بالاسم، البريد، المكان، ID…','Rechercher nom, e-mail, lieu, ID…'], search_dv:['بحث بالـ ID أو المكان…','Rechercher ID ou lieu…'],
+ add_device:['إضافة جهاز','Ajouter un boîtier'],
+ place_client:['المكان / الزبون','Lieu / client'], state:['الحالة','État'], fw:['النسخة','Version'], linked_on:['تاريخ الربط','Relié le'],
+ st_linked:['مربوط','Relié'], st_free:['حرّ — ينتظر CONFIG','Libre — attend CONFIG'], st_nokey:['بدون مفتاح','Sans clé'],
+ owner:['المالك','Propriétaire'], manager:['مسؤول','Responsable'],
+ unlink_t:['فك ربط الجهاز','Délier le boîtier'],
+ unlink_p:['يصبح الجهاز «حرًّا»: الحساب القديم يفقد الوصول إليه من الحساب، ويستطيع زبون آخر ربطه بالضغط على CONFIG. <b>السقي يستمر عاديًا.</b> كلمة سر EMQX لا تتغير تلقائيًا: غيّرها يدويًا في EMQX إذا لزم.','Le boîtier devient « libre » : l\'ancien compte n\'y a plus accès, et un autre client peut le relier avec CONFIG. <b>L\'irrigation continue normalement.</b> Le mot de passe EMQX ne change pas automatiquement : changez-le à la main dans EMQX si besoin.'],
+ unlink_ck:['تحققت من هوية الزبون (البطاقة الوطنية، الجمعية)','J\'ai vérifié l\'identité du client (CIN, association)'],
+ reason:['السبب (يُحفظ في السجل، 5 أحرف على الأقل)','Raison (enregistrée au journal, 5 caractères minimum)'],
+ cancel:['إلغاء','Annuler'], unlink:['فك الربط','Délier'],
+ add_t:['إضافة جهاز جديد','Ajouter un nouveau boîtier'],
+ add_p:['بعد تحضيره بالـ USB (دليل التحضير، المرحلة 1).','Après sa préparation par USB (guide de préparation, étape 1).'],
+ add_id:['ID (الجواب على الأمر ID)','ID (réponse à la commande ID)'],
+ add_key:['مفتاح التوقيع: 64 حرفًا (نفس SETKEY). يُلصق ولا يظهر بعد الحفظ.','Clé de signature : 64 caractères (la même que SETKEY). Collée, jamais réaffichée.'],
+ note:['ملاحظة (اختياري)','Note (facultatif)'],
+ add_emqx:['حسابات EMQX للجهاز وللتطبيق تُنشأ يدويًا في لوحة EMQX.','Les comptes EMQX du boîtier et de l\'application se créent à la main dans la console EMQX.'],
+ save_device:['حفظ الجهاز','Enregistrer le boîtier'],
+ not_admin:['هذا الحساب ليس مديرًا.','Ce compte n\'est pas administrateur.'],
+ err_net:['تعذّر الاتصال بالخادم. تحقق من الإنترنت.','Impossible de joindre le serveur. Vérifiez Internet.'],
+ saved:['تم الحفظ ✓','Enregistré ✓'], unlinked:['تم فك الربط ✓','Boîtier délié ✓'],
+ bad_id:['ID: 6 أحرف (0-9 و A-F).','ID : 6 caractères (0-9 et A-F).'], bad_key:['المفتاح: 64 حرفًا (0-9 و a-f).','Clé : 64 caractères (0-9 et a-f).'],
+ exists:['هذا الجهاز موجود. الحفظ سيستبدل مفتاحه.','Ce boîtier existe déjà. L\'enregistrement remplacera sa clé.'],
+ nothing:['لا شيء ✓','Rien ✓'], none:['لا يوجد','Aucun'],
+ account:['الحساب','Compte'], email:['البريد','E-mail'], created:['أُنشئ','Créé'], last_login:['آخر دخول','Dernière connexion'],
+ members:['المسؤولون','Responsables'], key:['المفتاح','Clé'], key_ok:['مسجّل ✓','Enregistrée ✓'], key_no:['غير مسجّل','Absente'],
+ sim:['رقم شريحة الجهاز','N° SIM du boîtier'], place:['المكان','Lieu'], actions:['إجراءات','Actions'],
+ free_note:['الجهاز حرّ: ينتظر أن يضغط زبون CONFIG.','Boîtier libre : il attend qu\'un client appuie sur CONFIG.'],
+ save_note:['حفظ الملاحظة','Enregistrer la note'], is_admin:['مدير','Admin'],
+ attn_nokey:['جهاز بدون مفتاح: لا يمكن ربطه','Boîtier sans clé : impossible à relier'],
+ attn_noplace:['زبون بلا مكان منذ أكثر من 7 أيام','Client sans lieu depuis plus de 7 jours'],
+ a_claim:['ربط جهاز','Liaison'], a_unlink:['فك الربط (المالك)','Déliaison (propriétaire)'], a_admin_unlink:['فك الربط (المدير)','Déliaison (admin)'],
+ a_register:['إضافة جهاز','Ajout boîtier'], a_invite:['دعوة مسؤول','Invitation'], a_invite_accept:['قبول دعوة','Invitation acceptée'],
+ a_member_remove:['إزالة مسؤول','Responsable retiré'], a_owner_transfer:['نقل الملكية','Transfert de propriété'], a_account_delete:['حذف حساب','Compte supprimé'],
+ show:['اضغط للإظهار','toucher pour afficher']
+};
+var LANG='ar'; try{ LANG=localStorage.getItem('tayoga_admin_lang')||'ar'; }catch(e){}
+function t(k){ var v=T[k]; return v?(LANG==='fr'?v[1]:v[0]):k; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function q(id){ return document.getElementById(id); }
+function applyLang(){
+  document.documentElement.lang=LANG; document.documentElement.dir=LANG==='fr'?'ltr':'rtl';
+  document.querySelectorAll('[data-t]').forEach(function(e){ e.innerHTML=t(e.getAttribute('data-t')); });
+  q('s-cl').placeholder=t('search_cl'); q('s-dv').placeholder=t('search_dv'); q('u-r').placeholder='';
+}
+function toggleLang(){ LANG=LANG==='fr'?'ar':'fr'; try{ localStorage.setItem('tayoga_admin_lang',LANG); }catch(e){} applyLang(); if(DB)renderAll(); }
+function toast(m){ var e=q('toast'); e.textContent=m; e.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(function(){ e.classList.remove('on'); },2600); }
+function fmtD(s,withTime){
+  if(!s)return '—'; var d=new Date(s); if(isNaN(d))return '—';
+  function z(n){ return (n<10?'0':'')+n; }
+  return '<bdi dir="ltr">'+z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()+(withTime?' '+z(d.getHours())+':'+z(d.getMinutes()):'')+'</bdi>';
+}
+function maskPh(p){ if(!p)return '—'; p=String(p); return p.slice(0,5)+'•• ••• •'+p.slice(-2); }
+function phHtml(p){ if(!p)return '—'; return '<span class="mono mask" title="'+esc(t('show'))+'" onclick="event.stopPropagation();this.textContent=this.getAttribute(\'data-v\')" data-v="'+esc(p)+'">'+esc(maskPh(p))+'</span>'; }
+
+var sb=null, DB=null, ME=null;
+function errText(e){
+  var m=(e&&(e.message||e.msg))||'';
+  if(m==='denied')return t('not_admin');
+  if(/fetch|network/i.test(m))return t('err_net');
+  if(m==='device')return t('bad_id'); if(m==='key')return t('bad_key');
+  return m||t('err_net');
+}
+function showLogin(msg,signedIn){
+  q('app').style.display='none'; q('login').style.display='flex';
+  q('lg-msg').innerHTML=msg?'<div class="err">'+msg+'</div>':'';
+  q('lg-out').style.display=signedIn?'':'none'; q('lg-g').style.display=signedIn?'none':'';
+}
+function signIn(){
+  sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname,queryParams:{prompt:'select_account'}}})
+    .then(function(r){ if(r.error)showLogin(esc(errText(r.error))); });
+}
+function signOut(){ sb.auth.signOut().then(function(){ DB=null; ME=null; showLogin(''); }); }
+
+function load(){
+  return sb.rpc('admin_overview').then(function(r){
+    if(r.error){
+      if(r.error.message==='denied'){ showLogin(esc(t('not_admin'))+'<br><span class="mono">'+esc(ME&&ME.email||'')+'</span>',true); return; }
+      toast(errText(r.error)); return;
+    }
+    DB=r.data; index();
+    q('login').style.display='none'; q('app').style.display='flex';
+    q('me-mail').textContent=ME&&ME.email||'';
+    renderAll();
+  },function(e){ toast(errText(e)); });
+}
+var U={},P={},M={},DV={};
+function index(){
+  U={}; P={}; M={}; DV={};
+  DB.users.forEach(function(u){ U[u.id]=u; u.places=[]; u.devs=[]; });
+  DB.places.forEach(function(p){ P[p.id]=p; p.mem=[]; p.devs=[]; });
+  DB.members.forEach(function(m){ var p=P[m.place]; if(p)p.mem.push(m); var u=U[m.user]; if(u&&p)u.places.push({p:p,role:m.role}); });
+  DB.devices.forEach(function(d){ DV[d.id]=d; var p=d.place&&P[d.place]; if(p){ p.devs.push(d); p.mem.forEach(function(m){ var u=U[m.user]; if(u)u.devs.push(d); }); } });
+}
+function uName(u){ return u?(u.name||u.email||'—'):'—'; }
+function ownerOf(p){ var o=p&&p.mem.filter(function(m){ return m.role==='owner'; })[0]; return o&&U[o.user]; }
+function devState(d){
+  if(!d.key)return '<span class="pill r">'+t('st_nokey')+'</span>';
+  return d.place?'<span class="pill g">● '+t('st_linked')+'</span>':'<span class="pill o">'+t('st_free')+'</span>';
+}
+function actLabel(a){ return T['a_'+a]?t('a_'+a):a; }
+function actDetail(a){
+  var u=a.user&&U[a.user], p=a.place&&P[a.place], x=a.detail||{}, s=[];
+  if(u)s.push(esc(uName(u)));
+  if(p)s.push(esc(p.name));
+  if(x.reason)s.push('«'+esc(x.reason)+'»');
+  if(x.was&&U[x.was])s.push('← '+esc(uName(U[x.was])));
+  if(x.to&&U[x.to])s.push('→ '+esc(uName(U[x.to])));
+  if(x.user&&U[x.user])s.push(esc(uName(U[x.user])));
+  return s.join(' · ')||'—';
+}
+function logRow(a){ return '<tr'+(a.device?' class="ck" onclick="openDev(\''+esc(a.device)+'\')"':'')+'><td class="mono">'+fmtD(a.at,true)+'</td><td>'+esc(actLabel(a.action))+'</td><td class="mono">'+esc(a.device||'—')+'</td><td>'+actDetail(a)+'</td></tr>'; }
+
+function renderHome(){
+  var linked=DB.devices.filter(function(d){ return d.place; }).length;
+  q('k1').textContent=DB.users.length; q('k2').textContent=DB.places.length;
+  q('k3').textContent=linked+' / '+DB.devices.length; q('k4').textContent=DB.devices.filter(function(d){ return !d.place&&d.key; }).length;
+  q('home-sub').textContent=new Date().toLocaleDateString(LANG==='fr'?'fr-FR':'ar-MA',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+  var rows=[];
+  DB.devices.filter(function(d){ return !d.key; }).forEach(function(d){ rows.push('<tr class="ck" onclick="openDev(\''+esc(d.id)+'\')"><td class="mono">'+esc(d.id)+'</td><td>'+t('attn_nokey')+'</td></tr>'); });
+  var wk=Date.now()-7*864e5;
+  DB.users.filter(function(u){ return !u.places.length&&!u.admin&&new Date(u.created).getTime()<wk; }).forEach(function(u){ rows.push('<tr class="ck" onclick="openCl(\''+esc(u.id)+'\')"><td>'+esc(uName(u))+'</td><td>'+t('attn_noplace')+'</td></tr>'); });
+  q('t-attn').innerHTML=rows.join('')||'<tr><td class="empty">'+t('nothing')+'</td></tr>';
+  q('t-new').innerHTML=DB.audit.slice(0,8).map(logRow).join('')||'<tr><td colspan="4" class="empty">'+t('none')+'</td></tr>';
+}
+function renderClients(){
+  var f=(q('s-cl').value||'').trim().toUpperCase();
+  var L=DB.users.filter(function(u){
+    if(!f)return true;
+    return (uName(u)+' '+(u.email||'')+' '+u.places.map(function(x){ return x.p.name; }).join(' ')+' '+u.devs.map(function(d){ return d.id; }).join(' ')).toUpperCase().indexOf(f)>=0;
+  });
+  q('t-clients').innerHTML=L.map(function(u){
+    return '<tr class="ck" onclick="openCl(\''+esc(u.id)+'\')"><td><b>'+esc(uName(u))+'</b>'+(u.admin?' <span class="pill b">'+t('is_admin')+'</span>':'')+'<br><small class="d mono">'+esc(u.email||'')+'</small></td>'+
+      '<td>'+phHtml(u.phone)+'</td><td>'+(u.places.map(function(x){ return esc(x.p.name)+(x.role==='owner'?'':' <span class="pill d">'+t('manager')+'</span>'); }).join('<br>')||'—')+'</td>'+
+      '<td class="mono">'+(u.devs.map(function(d){ return esc(d.id); }).join(', ')||'—')+'</td><td>'+fmtD(u.created)+'</td></tr>';
+  }).join('')||'<tr><td colspan="5" class="empty">'+t('none')+'</td></tr>';
+}
+function renderDevices(){
+  var f=(q('s-dv').value||'').trim().toUpperCase();
+  var L=DB.devices.filter(function(d){ var p=d.place&&P[d.place]; return !f||(d.id+' '+(p?p.name:'')+' '+(d.note||'')).toUpperCase().indexOf(f)>=0; });
+  q('t-devices').innerHTML=L.map(function(d){
+    var p=d.place&&P[d.place], o=ownerOf(p);
+    return '<tr class="ck" onclick="openDev(\''+esc(d.id)+'\')"><td class="mono"><b>'+esc(d.id)+'</b></td><td>'+(p?esc(p.name)+(o?'<br><small class="d">'+esc(uName(o))+'</small>':''):(d.note?'<small class="d">'+esc(d.note)+'</small>':'—'))+'</td>'+
+      '<td>'+devState(d)+'</td><td class="mono">'+esc(d.fw||'—')+'</td><td>'+fmtD(d.claimed)+'</td></tr>';
+  }).join('')||'<tr><td colspan="5" class="empty">'+t('none')+'</td></tr>';
+}
+function renderLog(){ q('t-log').innerHTML=DB.audit.map(logRow).join('')||'<tr><td colspan="4" class="empty">'+t('none')+'</td></tr>'; }
+function renderAll(){
+  renderHome(); renderClients(); renderDevices(); renderLog();
+  q('c-cl').textContent=DB.users.length; q('c-dv').textContent=DB.devices.length;
+  if(_dr){ if(_dr.k==='d')openDev(_dr.id); else openCl(_dr.id); }
+}
+
+var _dr=null;
+function kv(k,v){ return '<div class="kv"><span>'+k+'</span><b>'+v+'</b></div>'; }
+function openDev(id){
+  var d=DV[id]; if(!d)return; _dr={k:'d',id:id};
+  var p=d.place&&P[d.place];
+  var h='<h2>📦 '+t('device')+' <span class="mono">'+esc(d.id)+'</span></h2><p class="sub" style="margin:0 0 10px">'+devState(d)+'</p>'+
+    kv(t('place'),p?esc(p.name):'—')+kv(t('fw'),'<span class="mono">'+esc(d.fw||'—')+'</span>')+kv(t('sim'),phHtml(d.sim))+
+    kv(t('key'),d.key?t('key_ok'):'<span style="color:var(--r)">'+t('key_no')+'</span>')+kv(t('linked_on'),fmtD(d.claimed,true))+kv(t('created'),fmtD(d.created));
+  if(p){
+    h+='<div class="sec">'+t('members')+'</div>'+p.mem.map(function(m){ var u=U[m.user]; return '<div class="kv ck" onclick="openCl(\''+esc(m.user)+'\')"><span>'+esc(uName(u))+'</span><b><span class="pill '+(m.role==='owner'?'g':'d')+'">'+t(m.role)+'</span></b></div>'; }).join('');
+  }
+  h+='<div class="sec">'+t('note')+'</div><input class="in" id="d-note" maxlength="200" value="'+esc(d.note||'')+'"><div class="row" style="margin-top:8px"><button class="btn o" onclick="saveNote(\''+esc(d.id)+'\')">'+t('save_note')+'</button></div>';
+  h+='<div class="sec">'+t('actions')+'</div>'+(p?'<button class="btn r" style="width:100%" onclick="openUnlink(\''+esc(d.id)+'\')">🔓 '+t('unlink')+'</button>':'<div class="warn">'+t('free_note')+'</div>');
+  var lg=DB.audit.filter(function(a){ return a.device===d.id; });
+  if(lg.length)h+='<div class="sec">'+t('log')+'</div><table><tbody>'+lg.slice(0,20).map(logRow).join('')+'</tbody></table>';
+  q('dr-c').innerHTML=h; q('dr').classList.add('open');
+}
+function openCl(id){
+  var u=U[id]; if(!u)return; _dr={k:'c',id:id};
+  var h='<h2>👤 '+esc(uName(u))+'</h2><p class="sub" style="margin:0 0 10px">'+t('account')+' Google'+(u.admin?' · <span class="pill b">'+t('is_admin')+'</span>':'')+'</p>'+
+    kv(t('email'),'<span class="mono">'+esc(u.email||'—')+'</span>')+kv(t('phone'),phHtml(u.phone))+kv(t('created'),fmtD(u.created,true))+kv(t('last_login'),fmtD(u.last,true));
+  h+='<div class="sec">'+t('places')+'</div>'+(u.places.map(function(x){
+    return '<div class="kv"><span>'+esc(x.p.name)+'</span><b><span class="pill '+(x.role==='owner'?'g':'d')+'">'+t(x.role)+'</span></b></div>'+
+      x.p.devs.map(function(d){ return '<div class="kv ck" onclick="openDev(\''+esc(d.id)+'\')"><span class="mono">&nbsp;&nbsp;📦 '+esc(d.id)+'</span><b>'+devState(d)+'</b></div>'; }).join('');
+  }).join('')||'<div class="kv"><span>'+t('none')+'</span></div>');
+  q('dr-c').innerHTML=h; q('dr').classList.add('open');
+}
+function closeDr(){ _dr=null; q('dr').classList.remove('open'); }
+function saveNote(id){
+  sb.rpc('admin_device_note',{p_device:id,p_note:q('d-note').value}).then(function(r){
+    if(r.error){ toast(errText(r.error)); return; } toast(t('saved')); load();
+  });
+}
+var _u='';
+function openUnlink(id){ _u=id; q('u-id').textContent=id; q('u-c1').checked=false; q('u-r').value=''; q('u-msg').innerHTML=''; uChk(); openM('m-unlink'); }
+function uChk(){ q('u-go').disabled=!(q('u-c1').checked&&q('u-r').value.trim().length>=5); }
+function doUnlink(){
+  q('u-go').disabled=true;
+  sb.rpc('admin_device_unlink',{p_device:_u,p_reason:q('u-r').value.trim()}).then(function(r){
+    if(r.error){ q('u-msg').innerHTML='<div class="err">'+esc(errText(r.error))+'</div>'; uChk(); return; }
+    closeM(); toast(t('unlinked')); load();
+  });
+}
+function openAdd(){ q('a-id').value=''; q('a-key').value=''; q('a-note').value=''; q('a-msg').innerHTML=''; openM('m-add'); setTimeout(function(){ q('a-id').focus(); },50); }
+function doAdd(){
+  var id=q('a-id').value.trim().toUpperCase(), key=q('a-key').value.trim().toLowerCase(), note=q('a-note').value.trim();
+  if(!/^[0-9A-F]{6}$/.test(id)){ q('a-msg').innerHTML='<div class="err">'+t('bad_id')+'</div>'; return; }
+  if(!/^[0-9a-f]{64}$/.test(key)){ q('a-msg').innerHTML='<div class="err">'+t('bad_key')+'</div>'; return; }
+  if(DV[id]&&!doAdd._ok){ doAdd._ok=id; q('a-msg').innerHTML='<div class="warn">'+t('exists')+'</div>'; return; }
+  doAdd._ok=null; q('a-go').disabled=true;
+  sb.rpc('admin_device_register',{p_device:id,p_key_hex:key,p_note:note||null}).then(function(r){
+    q('a-go').disabled=false; q('a-key').value='';
+    if(r.error){ q('a-msg').innerHTML='<div class="err">'+esc(errText(r.error))+'</div>'; return; }
+    closeM(); toast(t('saved')); go('devices'); load().then(function(){ openDev(id); });
+  });
+}
+function openM(id){ document.querySelectorAll('.modal').forEach(function(m){ m.classList.remove('open'); }); q(id).classList.add('open'); }
+function closeM(){ document.querySelectorAll('.modal').forEach(function(m){ m.classList.remove('open'); }); }
+function go(p){
+  document.querySelectorAll('.nav a[data-p],.tabs a').forEach(function(a){ a.classList.toggle('on',a.getAttribute('data-p')===p); });
+  document.querySelectorAll('.page').forEach(function(s){ s.classList.toggle('on',s.id==='p-'+p); });
+  closeDr(); window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav a[data-p],.tabs a').forEach(function(a){ a.onclick=function(){ go(a.getAttribute('data-p')); }; });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeM(); closeDr(); } });
+
+applyLang();
+if(!window.supabase){ showLogin(esc(t('err_net'))); }
+else{
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true}});
+  sb.auth.onAuthStateChange(function(ev,s){
+    if(ev==='SIGNED_OUT'){ ME=null; return; }
+    if(s&&s.user&&(!ME||ME.id!==s.user.id)){ ME=s.user; setTimeout(load,0); }
+  });
+  sb.auth.getSession().then(function(r){
+    var s=r.data&&r.data.session;
+    if(s){ ME=s.user; load(); } else showLogin('');
+  });
+}
+</script>
+</body>
+</html>
