@@ -731,7 +731,8 @@ async function wsFlash(){
       if(!rr.ok)throw new Error('HTTP '+rr.status);
       data=new Uint8Array(await rr.arrayBuffer()); label=cur.version;
     }
-    if(data.length<150000||data[0]!==0xE9)throw new Error(t('fl_bad'));
+    // ESP32 : le bootloader commence à 0x1000 ; un .merged.bin commence donc par 4 Ko de 0xFF
+    if(data.length<150000||!(data[0]===0xE9||(data.length>0x1000&&data[0x1000]===0xE9)))throw new Error(t('fl_bad'));
     await wsClose();
     var mod=await import('./esptool-0.5.4.js');
     var port=WS.lastPort||await navigator.serial.requestPort(); WS.lastPort=port;
@@ -830,6 +831,7 @@ async function otaPick(){
       if(new Uint8Array(buf)[0]!==0xE9)OF.err=t('fl_bad');
     }
     if(OF.merged&&!/merged/i.test(OF.merged.name))OF.err=t('ota_err_notmerged');
+    if(OF.merged){ var mg=new Uint8Array(await OF.merged.slice(0,0x1001).arrayBuffer()); if(!(mg[0]===0xE9||mg[0x1000]===0xE9))OF.err=t('fl_bad'); }
     if(kf){
       var k=JSON.parse(await kf.text());
       if(!k||k.tayoga!=='ota-private-key'||!k.jwk)throw new Error(t('ota_err_key'));
