@@ -640,12 +640,16 @@ async function wsStep(k){
     if(!m)throw new Error(t('ws_timeout'));
     WS.id=m[1];
     var fw=/Usine:/.test(x)?'':' · ⚠️ Firmware ≥ V3.0.8 ?';
+    // [V3.0.8] données fraîches : le boîtier a pu être relié depuis l'ouverture de la page
+    try{ await load(); }catch(e){}
     if(DV[WS.id]&&DV[WS.id].place)throw new Error(WS.id+' — '+t('ws_owned'));
     wsSet(k,'ok','<b class="mono">'+esc(WS.id)+'</b>'+fw); return;
   }
   if(k==='keys'){
     var x=await wsBlock('KEYGEN');
     if(x&&/KEYGEN:EXISTE/.test(x)){
+      try{ await load(); }catch(e){}
+      if(DV[WS.id]&&DV[WS.id].place)throw new Error(WS.id+' — '+t('ws_owned'));
       if(!confirm(t('ws_force')))throw new Error('—');
       x=await wsBlock('KEYGEN:FORCE');
     }
@@ -692,8 +696,18 @@ async function wsStep(k){
   }
   if(k==='lab'){ wsSet(k,'ok',''); return; }
 }
+// [V3.0.8] le mot de passe TAYOGA-BOX est demandé AVANT de commencer : sinon les
+// étapes s'arrêtaient à « Compte serveur » avec un boîtier inscrit mais sans serveur
+function wsNeedPass(){
+  var pw=(q('ws-pass')||{}).value||WS.boxPass;
+  if(pw)return false;
+  toast(t('ws_box_pass')+' ?'); var e=q('ws-pass'); if(e){ e.focus(); e.scrollIntoView({block:'center'}); }
+  return true;
+}
 async function wsRun(from){
-  if(WS.busy||WS.flashing)return; WS.busy=true;
+  if(WS.busy||WS.flashing)return;
+  if(WS_STEPS.indexOf(from||'usb')<=WS_STEPS.indexOf('box')&&wsNeedPass())return;
+  WS.busy=true;
   try{
     for(var i=WS_STEPS.indexOf(from||'usb');i<WS_STEPS.length;i++){
       var k=WS_STEPS[i];
@@ -716,6 +730,7 @@ function binStr(u8){ var s='', C=0x8000; for(var i=0;i<u8.length;i+=C)s+=String.
 async function wsFlash(){
   if(WS.busy||WS.flashing)return;
   if(!('serial' in navigator)){ toast(t('ws_noserial')); return; }
+  if(wsNeedPass())return;
   var src=(document.querySelector('input[name=fl-src]:checked')||{}).value||'pub', erase=q('fl-erase').checked, data=null, label='';
   try{
     WS.flashing=true; wsFlashSay('…'); wsRender();
