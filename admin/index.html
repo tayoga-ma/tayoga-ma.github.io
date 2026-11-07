@@ -100,6 +100,10 @@ h2 .vn{width:24px;height:24px;vertical-align:-5px}
 .lab b{display:block;font:800 22px/1.3 ui-monospace,Menlo,monospace;letter-spacing:1px}
 .lab small{color:var(--dim)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn.sm{padding:4px 10px;font-size:12px}
+.rad{display:flex;align-items:center;gap:8px;font-size:13.5px;margin:6px 0;flex-wrap:wrap}
+.rad input[type=file]{font-size:12px;color:var(--dim)}
+.fin{display:block;width:100%;font-size:13px;color:var(--dim);margin:4px 0 10px}
 @media print{body *{visibility:hidden}.lab,.lab *{visibility:visible}.lab{position:fixed;top:0;left:0;border:1px solid #000;color:#000}}
 @media(max-width:900px){
   .nav{display:none}.kpis{grid-template-columns:repeat(2,1fr)}main{padding:14px 16px 90px}
@@ -134,6 +138,7 @@ h2 .vn{width:24px;height:24px;vertical-align:-5px}
     <a data-p="devices"><svg class="vn" viewBox="0 0 24 24"><path d="M2 15.5h4.5M17.5 15.5H22M2 12.5v6M22 12.5v6"/><circle cx="12" cy="15.5" r="5"/><path d="M9.8 15.5h4.4"/><path class="w" d="M8.6 6.6a5 5 0 0 1 6.8 0M10.3 8.7a2.4 2.4 0 0 1 3.4 0"/></svg> <span data-t="devices"></span> <span class="c" id="c-dv">0</span></a>
     <a data-p="log">🧾 <span data-t="log"></span></a>
     <a data-p="atelier">🛠 <span data-t="atelier"></span></a>
+    <a data-p="ota">📦 <span data-t="ota"></span></a>
     <div class="me"><div><span data-t="admin"></span><br><span class="mono" id="me-mail"></span></div>
       <button class="lnk" onclick="toggleLang()">العربية / Français</button>
       <button class="lnk" onclick="signOut()" data-t="signout"></button></div>
@@ -190,6 +195,27 @@ h2 .vn{width:24px;height:24px;vertical-align:-5px}
         </div>
       </div>
     </section>
+    <section class="page" id="p-ota">
+      <div class="top"><h1>📦 <span data-t="ota"></span></h1></div><p class="sub" data-t="ota_sub"></p>
+      <div class="ws">
+        <div>
+          <div class="box"><h3>🚀 <span data-t="ota_new"></span></h3>
+            <div class="lbl" data-t="ota_bin"></div><input class="fin" type="file" id="ota-bin" accept=".bin" onchange="otaPick()">
+            <div class="lbl" data-t="ota_mergedf"></div><input class="fin" type="file" id="ota-merged" accept=".bin" onchange="otaPick()">
+            <div class="lbl" data-t="ota_keyf"></div><input class="fin" type="file" id="ota-key" accept=".private,.json" onchange="otaPick()">
+            <div class="lbl" data-t="ota_notes"></div><input class="in" id="ota-notes" maxlength="200">
+            <div id="ota-chk" class="chk" style="font-size:13px;line-height:1.9"></div>
+            <div id="ota-msg"></div>
+            <div class="row"><button class="btn g" id="ota-go" onclick="otaPublish()" disabled></button></div>
+          </div>
+          <div class="box"><h3>🔐 <span data-t="ota_key_t"></span></h3><p class="sub" style="margin:0 0 6px" data-t="ota_key_p"></p><div id="ota-pub"></div></div>
+        </div>
+        <div>
+          <div class="box"><h3>📡 <span data-t="ota_cur_t"></span></h3><div id="ota-cur"></div></div>
+          <div class="box"><h3>🗂 <span data-t="ota_hist"></span></h3><table><thead><tr><th data-t="ota_ver"></th><th data-t="date"></th><th></th></tr></thead><tbody id="ota-hist"></tbody></table></div>
+        </div>
+      </div>
+    </section>
   </main>
   <div class="tabs">
     <a class="on" data-p="home"><i>🏠</i><span data-t="home"></span></a>
@@ -197,6 +223,7 @@ h2 .vn{width:24px;height:24px;vertical-align:-5px}
     <a data-p="devices"><i><svg class="vn" viewBox="0 0 24 24"><path d="M2 15.5h4.5M17.5 15.5H22M2 12.5v6M22 12.5v6"/><circle cx="12" cy="15.5" r="5"/><path d="M9.8 15.5h4.4"/><path class="w" d="M8.6 6.6a5 5 0 0 1 6.8 0M10.3 8.7a2.4 2.4 0 0 1 3.4 0"/></svg></i><span data-t="devices"></span></a>
     <a data-p="log"><i>🧾</i><span data-t="log"></span></a>
     <a data-p="atelier"><i>🛠</i><span data-t="atelier"></span></a>
+    <a data-p="ota"><i>📦</i><span data-t="ota"></span></a>
   </div>
 </div>
 
@@ -280,7 +307,42 @@ var T={
  a_member_remove:['إزالة مسؤول','Responsable retiré'], a_owner_transfer:['نقل الملكية','Transfert de propriété'], a_account_delete:['حذف حساب','Compte supprimé'],
  show:['اضغط للإظهار','toucher pour afficher'],
  atelier:['الورشة','Atelier'],
- atelier_sub:['تحضير جهاز جديد بالـ USB من Chrome على الحاسوب: المفاتيح والتسجيل والخادم والملصق. الفلاش يبقى في Arduino IDE.','Préparer un boîtier neuf par USB depuis Chrome sur ordinateur : clés, inscription, serveur et étiquette. Le flash reste dans Arduino IDE.'],
+ ota:['التحديثات','Mises à jour'],
+ ota_sub:['نشر فيرموير جديد للأجهزة. التوقيع يتم في هذا المتصفح؛ المفتاح الخاص لا يُرفع أبدًا.','Publier un nouveau firmware pour les boîtiers. La signature se fait dans ce navigateur ; la clé privée n\'est jamais envoyée.'],
+ ota_new:['نشر نسخة جديدة','Publier une nouvelle version'],
+ ota_bin:['ملف التحديث: Tayoga_V3_0_X.ino.bin (Sketch ← Export Compiled Binary)','Fichier de mise à jour : Tayoga_V3_0_X.ino.bin (Sketch → Export Compiled Binary)'],
+ ota_mergedf:['ملف الفلاش الكامل (اختياري، للورشة): Tayoga_V3_0_X.ino.merged.bin','Fichier de flash complet (facultatif, pour l\'atelier) : Tayoga_V3_0_X.ino.merged.bin'],
+ ota_keyf:['المفتاح الخاص: tayoga_update.private (من clé USB)','Clé privée : tayoga_update.private (sur la clé USB)'],
+ ota_notes:['ملاحظة النسخة (تظهر في التطبيق)','Note de version (affichée dans l\'application)'],
+ ota_publish:['نشر','Publier'], ota_up:['رفع','Envoi'], ota_pub_ok:['منشورة: الأجهزة تجدها عند «التحقق من وجود تحديث»','publiée : les boîtiers la trouvent avec « Rechercher une mise à jour »'],
+ ota_key_t:['مفتاح التحديثات','Clé des mises à jour'],
+ ota_key_p:['زوج مفاتيح: الخاص في ملف تحفظه في جوج clé USB، والعمومي هنا وفي كل جهاز (الورشة). لا GitHub، لا Drive، لا رسائل.','Une paire de clés : la privée dans un fichier gardé sur deux clés USB, la publique ici et dans chaque boîtier (atelier). Ni GitHub, ni Drive, ni messagerie.'],
+ ota_nokey:['لا يوجد مفتاح بعد: أنشئه مرة واحدة.','Pas encore de clé : créez-la une fois.'], ota_gen:['إنشاء مفتاح التحديثات','Créer la clé des mises à jour'],
+ ota_pub_has:['المفتاح العمومي مسجّل ✓','Clé publique enregistrée ✓'], ota_regen:['استبدال المفتاح…','Remplacer la clé…'],
+ ota_replace:['استبدال مفتاح التحديثات؟ كل جهاز يجب أن يمر بالورشة من جديد (خطوة «مفتاح التحديثات») وإلا سيرفض التحديثات.','Remplacer la clé des mises à jour ? Chaque boîtier devra repasser à l\'atelier (étape « Clé des mises à jour »), sinon il refusera les mises à jour.'],
+ ota_key_ok:['✓ تم الحفظ. احفظ الملف tayoga_update.private في جوج clé USB.','✓ Enregistrée. Gardez le fichier tayoga_update.private sur deux clés USB.'],
+ ota_cur_t:['المنشورة الآن','Publiée actuellement'], ota_ver:['النسخة','Version'], ota_at:['نُشرت','Publiée le'], ota_size:['الحجم','Taille'],
+ ota_upd:['الأجهزة المحدّثة','Boîtiers à jour'], ota_merged:['ملف الفلاش (الورشة)','Fichier de flash (atelier)'], ota_none:['لا شيء منشور بعد.','Rien de publié pour l\'instant.'],
+ ota_hist:['النسخ المنشورة','Versions publiées'], ota_cur:['منشورة','en ligne'], ota_back:['رجوع','Revenir'],
+ ota_back_q:['الرجوع إلى %؟ الأجهزة ستجد هذه النسخة عند التحقق.','Revenir à % ? Les boîtiers trouveront cette version à la prochaine recherche.'],
+ ota_key_match:['المفتاح الخاص يطابق المفتاح العمومي','La clé privée correspond à la clé publique'],
+ ota_older:['ليست أحدث من المنشورة','pas plus récente que celle en ligne'],
+ ota_err_ver:['لا رقم نسخة في اسم الملف (مثال: Tayoga_V3_0_9.ino.bin)','Pas de numéro de version dans le nom (ex. Tayoga_V3_0_9.ino.bin)'],
+ ota_err_merged:['هذا ملف الفلاش الكامل (merged): للتحديث اختر .ino.bin','C\'est le fichier de flash complet (merged) : pour la mise à jour, prenez le .ino.bin'],
+ ota_err_notmerged:['ملف الفلاش الكامل يجب أن يكون .merged.bin','Le fichier de flash complet doit être le .merged.bin'],
+ ota_err_key:['ليس ملف مفتاح TAYOGA','Ce n\'est pas un fichier de clé TAYOGA'],
+ ota_err_pub:['هذا المفتاح الخاص لا يطابق المفتاح العمومي المسجّل','Cette clé privée ne correspond pas à la clé publique enregistrée'],
+ ota_err_missing:['اختر ملف التحديث والمفتاح الخاص','Choisissez le fichier de mise à jour et la clé privée'],
+ ws_ota:['مفتاح التحديثات','Clé des mises à jour'], ws_otas:['عنوان التحديثات والمفتاح العمومي (SETOTAPUB، بالـ USB فقط).','Adresse des mises à jour et clé publique (SETOTAPUB, USB seulement).'],
+ ws_nopub:['أنشئ مفتاح التحديثات أولاً (📦 التحديثات)','Créez d\'abord la clé des mises à jour (📦 Mises à jour)'],
+ fl_t:['تثبيت الفيرموير','Installer le firmware'], fl_p:['من Chrome مباشرة، بدون Arduino IDE. أغلق Serial Monitor.','Directement depuis Chrome, sans Arduino IDE. Fermez le Serial Monitor.'],
+ fl_src_pub:['آخر نسخة منشورة','Dernière version publiée'], fl_src_file:['ملف .merged.bin','Fichier .merged.bin'],
+ fl_erase:['مسح كامل قبل الكتابة (جهاز جديد أو من الصفر)','Effacement complet avant écriture (boîtier neuf ou repartir de zéro)'],
+ fl_go:['فلاش','Flasher'], fl_pick:['اختر ملف .merged.bin','Choisissez un fichier .merged.bin'], fl_nopub:['لا توجد نسخة منشورة بملف فلاش (merged)','Aucune version publiée avec fichier de flash (merged)'],
+ fl_dl:['تحميل','Téléchargement'], fl_bad:['ليس ملف فيرموير ESP32','Ce n\'est pas un firmware ESP32'], fl_conn:['الاتصال بالشريحة… (إن لم يبدأ: اضغط BOOT)','Connexion à la puce… (si rien ne se passe : appuyez sur BOOT)'],
+ fl_chip:['شريحة غير مدعومة:','Puce non prise en charge :'], fl_write:['الكتابة','Écriture'], fl_ok:['تم. تبدأ الخطوات الآن.','terminé. Les étapes démarrent.'],
+ a_ota_key:['مفتاح التحديثات','Clé des mises à jour'], a_ota_publish:['نشر تحديث','Publication d\'une mise à jour'], a_ota_rollback:['رجوع لنسخة سابقة','Retour à une version'], a_place_delete:['حذف مكان','Lieu supprimé'],
+ atelier_sub:['تحضير جهاز جديد بالـ USB من Chrome على الحاسوب: الفلاش، المفاتيح، التسجيل، الخادم والملصق.','Préparer un boîtier neuf par USB depuis Chrome sur ordinateur : flash, clés, inscription, serveur et étiquette.'],
  ws_noserial:['هذه الصفحة تحتاج Chrome أو Edge على الحاسوب (Web Serial). الهاتف لا يدعمها.','Cette page demande Chrome ou Edge sur ordinateur (Web Serial). Le téléphone ne la gère pas.'],
  ws1:['ربط الجهاز بالـ USB','Brancher le boîtier en USB'], ws1s:['أغلق «Serial Monitor» في Arduino IDE أولاً، ثم اختر المنفذ.','Fermez d\'abord le « Serial Monitor » d\'Arduino IDE, puis choisissez le port.'],
  ws2:['قراءة رقم الجهاز (ID)','Lire l\'identifiant (ID)'], ws2s:['الأمر ID','Commande ID'],
@@ -312,7 +374,7 @@ function q(id){ return document.getElementById(id); }
 function applyLang(){
   document.documentElement.lang=LANG; document.documentElement.dir=LANG==='fr'?'ltr':'rtl';
   document.querySelectorAll('[data-t]').forEach(function(e){ e.innerHTML=t(e.getAttribute('data-t')); });
-  try{ wsRender(); }catch(e){}
+  try{ wsRender(); otaRender(); }catch(e){}
   q('s-cl').placeholder=t('search_cl'); q('s-dv').placeholder=t('search_dv'); q('u-r').placeholder='';
 }
 function toggleLang(){ LANG=LANG==='fr'?'ar':'fr'; try{ localStorage.setItem('tayoga_admin_lang',LANG); }catch(e){} applyLang(); if(DB)renderAll(); }
@@ -350,7 +412,7 @@ function load(){
       if(r.error.message==='denied'){ showLogin(esc(t('not_admin'))+'<br><span class="mono">'+esc(ME&&ME.email||'')+'</span>',true); return; }
       toast(errText(r.error)); return;
     }
-    DB=r.data; index(); mqttLoad();
+    DB=r.data; index(); mqttLoad(); otaLoad();
     q('login').style.display='none'; q('app').style.display='flex';
     q('me-mail').textContent=ME&&ME.email||'';
     renderAll();
@@ -381,6 +443,8 @@ function actDetail(a){
   if(x.user&&U[x.user])s.push(esc(uName(U[x.user])));
   if(x.newkey)s.push('🔑 '+t('newkey'));
   if(x.host)s.push('<span class="mono">'+esc(x.host)+'</span>');
+  if(x.version)s.push('<span class="mono">'+esc(x.version)+'</span>');
+  if(x.name)s.push(esc(x.name));
   return s.join(' · ')||'—';
 }
 function logRow(a){ return '<tr'+(a.device?' class="ck" onclick="openDev(\''+esc(a.device)+'\')"':'')+'><td class="mono">'+fmtD(a.at,true)+'</td><td>'+esc(actLabel(a.action))+'</td><td class="mono">'+esc(a.device||'—')+'</td><td>'+actDetail(a)+'</td></tr>'; }
@@ -516,8 +580,9 @@ function mqttSave(){
 /* ══ [V3.0.7] Atelier : boîtier neuf par USB (Web Serial) ══
    Les clés naissent DANS le boîtier (KEYGEN) ; elles passent ici une fois,
    vont au serveur, puis sont effacées de la page. Le mot de passe du compte
-   TAYOGA-BOX reste en mémoire le temps de la session, jamais enregistré. */
-var WS={port:null,writer:null,reader:null,buf:'',lines:[],waiters:[],busy:false,id:'',K:'',R:'',st:{},r:{},boxPass:''};
+   TAYOGA-BOX reste en mémoire le temps de la session, jamais enregistré.
+   [V3.0.8] + le flash depuis Chrome (esptool-js) et la clé publique des mises à jour. */
+var WS={port:null,writer:null,reader:null,buf:'',lines:[],waiters:[],busy:false,id:'',K:'',R:'',st:{},r:{},boxPass:'',flashing:false};
 function wsMask(l){ return String(l).replace(/(K|R)=[0-9A-F]{64}/g,'$1=••••••••').replace(/(SETMQTTPASS:).*/i,'$1***'); }
 function wsLog(l,me){
   var e=q('ser'); if(!e)return;
@@ -532,63 +597,81 @@ function wsLine(l){
 }
 function wsWait(re,ms){ return new Promise(function(res){ var w={re:re,res:res}; w.to=setTimeout(function(){ var i=WS.waiters.indexOf(w); if(i>=0)WS.waiters.splice(i,1); res(null); },ms); WS.waiters.push(w); }); }
 function wsSend(cmd){ wsLog('> '+cmd,true); return WS.writer.write(new TextEncoder().encode(cmd+'\n')); }
-/* Une commande, et tout ce que le boîtier a écrit jusqu'à « --- fin --- » */
 function wsBlock(cmd,ms){
   var start=WS.lines.length, p=wsWait(/\[USB\] --- fin ---/,ms||8000);
   return wsSend(cmd).then(function(){ return p; }).then(function(m){ return m?WS.lines.slice(start).join('\n'):null; });
 }
 function wsSleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
-async function wsOpen(){
-  if(WS.port)return true;
+async function wsOpen(reuse){
+  if(WS.port&&WS.writer)return true;
   if(!('serial' in navigator))throw new Error(t('ws_noserial'));
-  var port=await navigator.serial.requestPort();
+  var port=reuse||WS.lastPort||await navigator.serial.requestPort();
   await port.open({baudRate:115200});
   try{ await port.setSignals({dataTerminalReady:false,requestToSend:false}); }catch(e){}
-  WS.port=port; WS.writer=port.writable.getWriter();
-  var dec=new TextDecoderStream(); port.readable.pipeTo(dec.writable).catch(function(){});
+  WS.port=port; WS.lastPort=port; WS.writer=port.writable.getWriter();
+  var dec=new TextDecoderStream(); WS.pipe=port.readable.pipeTo(dec.writable).catch(function(){});
   WS.reader=dec.readable.getReader();
   (async function(){
     try{ for(;;){ var x=await WS.reader.read(); if(x.done)break; WS.buf+=x.value; var i;
       while((i=WS.buf.indexOf('\n'))>=0){ var l=WS.buf.slice(0,i).replace(/\r$/,''); WS.buf=WS.buf.slice(i+1); wsLine(l); } } }catch(e){}
-    WS.port=null; q('ser-st').textContent=''; wsRender();
   })();
   q('ser-st').textContent='● 115200';
-  port.addEventListener&&port.addEventListener('disconnect',function(){ WS.port=null; wsRender(); });
-  await wsSleep(2500);                 // le boîtier peut redémarrer à l'ouverture du port
+  port.addEventListener&&port.addEventListener('disconnect',function(){ WS.port=null; WS.writer=null; WS.lastPort=null; wsRender(); });
+  await wsSleep(2500);
   return true;
 }
+/* Libérer le port (pour le flash) */
+async function wsClose(){
+  if(!WS.port)return;
+  try{ await WS.reader.cancel(); }catch(e){}
+  try{ await WS.pipe; }catch(e){}
+  try{ WS.writer.releaseLock(); }catch(e){}
+  try{ await WS.port.close(); }catch(e){}
+  WS.port=null; WS.writer=null; WS.reader=null; q('ser-st').textContent='';
+}
 function wsSet(k,st,r){ WS.st[k]=st; if(r!==undefined)WS.r[k]=r; wsRender(); }
+function otaManifestUrl(){ return SUPABASE_URL+'/storage/v1/object/public/firmware/manifest.json'; }
+var WS_STEPS=['usb','id','keys','ota','reg','box','test','lab'];
 async function wsStep(k){
-  if(k===1){ await wsOpen(); wsSet(1,'ok','✓'); return true; }
-  if(k===2){
-    var x=await wsBlock('ID'); var m=x&&/ID: ([0-9A-F]{6})/.exec(x);
+  if(k==='usb'){ await wsOpen(); wsSet(k,'ok','✓'); return; }
+  if(k==='id'){
+    // le boîtier redémarre souvent à l'ouverture du port : son démarrage peut prendre 20 s
+    var x=await wsBlock('ID',30000); var m=x&&/ID: ([0-9A-F]{6})/.exec(x);
     if(!m)throw new Error(t('ws_timeout'));
     WS.id=m[1];
-    var fw=/Usine:/.test(x)?'':' · ⚠️ V3.0.7 ?';
+    var fw=/Usine:/.test(x)?'':' · ⚠️ Firmware ≥ V3.0.8 ?';
     if(DV[WS.id]&&DV[WS.id].place)throw new Error(WS.id+' — '+t('ws_owned'));
-    wsSet(2,'ok','<b class="mono">'+esc(WS.id)+'</b>'+fw); return true;
+    wsSet(k,'ok','<b class="mono">'+esc(WS.id)+'</b>'+fw); return;
   }
-  if(k===3){
+  if(k==='keys'){
     var x=await wsBlock('KEYGEN');
     if(x&&/KEYGEN:EXISTE/.test(x)){
       if(!confirm(t('ws_force')))throw new Error('—');
       x=await wsBlock('KEYGEN:FORCE');
     }
     var m=x&&/KEYGEN:OK ID=([0-9A-F]{6}) K=([0-9A-F]{64}) R=([0-9A-F]{64})/.exec(x);
-    if(!m)throw new Error(x?'KEYGEN ? (Firmware V3.0.7)':t('ws_timeout'));
+    if(!m)throw new Error(x?'KEYGEN ? (Firmware ≥ V3.0.8)':t('ws_timeout'));
     if(m[1]!==WS.id)throw new Error('ID ≠ '+WS.id);
     WS.K=m[2]; WS.R=m[3];
-    wsSet(3,'ok','🔑 ✓'); return true;
+    wsSet(k,'ok','🔑 ✓'); return;
   }
-  if(k===4){
+  if(k==='ota'){
+    if(!OTA.pub)throw new Error(t('ws_nopub'));
+    var x=await wsBlock('SETOTAURL:'+otaManifestUrl());
+    if(x===null)throw new Error(t('ws_timeout'));
+    x=await wsBlock('SETOTAPUB:'+OTA.pub);
+    if(!x||!/SETOTAPUB:OK/.test(x))throw new Error(x?'SETOTAPUB ? (Firmware ≥ V3.0.8)':t('ws_timeout'));
+    wsSet(k,'ok','📦 ✓'); return;
+  }
+  if(k==='reg'){
     if(!WS.K||!WS.R)throw new Error('KEYGEN');
     var r=await sb.rpc('admin_device_register2',{p_device:WS.id,p_key_hex:WS.K,p_rec_hex:WS.R,p_note:null});
     if(r.error){ var em=r.error.message==='owned'?t('ws_owned'):errText(r.error); throw new Error(em); }
-    WS.K=''; WS.R='';                    // les clés quittent la page
+    WS.K=''; WS.R='';
     await load();
-    wsSet(4,'ok','<span class="pill o">'+t('st_free')+'</span>'); return true;
+    wsSet(k,'ok','<span class="pill o">'+t('st_free')+'</span>'); return;
   }
-  if(k===5){
+  if(k==='box'){
     var host=(MQ.host||'').trim(); if(!host)throw new Error(t('ws_nohost'));
     var user=(q('ws-user')||{}).value||'TAYOGA-BOX', port=parseInt((q('ws-port')||{}).value||'8883',10), pw=(q('ws-pass')||{}).value||WS.boxPass;
     if(!pw)throw new Error(t('ws_box_pass')+' ?');
@@ -597,55 +680,228 @@ async function wsStep(k){
     if(port===8883)cmds.push('MQTT:TLS:ON');
     cmds.push('MQTT:ON');
     for(var i=0;i<cmds.length;i++){ var x=await wsBlock(cmds[i],12000); if(x===null)throw new Error(t('ws_timeout')+' ('+cmds[i].split(':')[0]+')'); }
-    wsSet(5,'ok','<span class="mono">'+esc(user)+' @ '+esc(host)+':'+port+'</span>'); return true;
+    wsSet(k,'ok','<span class="mono">'+esc(user)+' @ '+esc(host)+':'+port+'</span>'); return;
   }
-  if(k===6){
+  if(k==='test'){
     for(var n=0;n<12;n++){
       var x=await wsBlock('MQTT:STATUS',8000);
-      if(x&&/Connecte OK/.test(x)){ wsSet(6,'ok','✓ Connecte OK'); return true; }
-      wsSet(6,'run','… '+(n+1)+'/12'); await wsSleep(5000);
+      if(x&&/Connecte OK/.test(x)){ wsSet(k,'ok','✓ Connecte OK'); return; }
+      wsSet(k,'run','… '+(n+1)+'/12'); await wsSleep(5000);
     }
     throw new Error(t('ws_mqtt_ko'));
   }
-  if(k===7){ wsSet(7,'ok',''); return true; }
+  if(k==='lab'){ wsSet(k,'ok',''); return; }
 }
 async function wsRun(from){
-  if(WS.busy)return; WS.busy=true;
+  if(WS.busy||WS.flashing)return; WS.busy=true;
   try{
-    for(var k=from||1;k<=7;k++){
+    for(var i=WS_STEPS.indexOf(from||'usb');i<WS_STEPS.length;i++){
+      var k=WS_STEPS[i];
       wsSet(k,'run','…');
       try{ await wsStep(k); }
       catch(e){ wsSet(k,'bad',esc(e&&e.message||String(e))); return; }
     }
   } finally { WS.busy=false; wsRender(); }
 }
-function wsNext(){ WS.id=''; WS.K=''; WS.R=''; WS.st={}; WS.r={}; wsRender(); wsRun(2); }
+function wsSkip(k){ wsSet(k,'ok','—'); var i=WS_STEPS.indexOf(k); if(i<WS_STEPS.length-1)wsRun(WS_STEPS[i+1]); }
+function wsNext(){ WS.id=''; WS.K=''; WS.R=''; WS.st={}; WS.r={}; wsRender(); }
 function wsManual(){
   var v=q('ser-in').value.trim(); if(!v||!WS.writer)return;
   if(/^KEYGEN/i.test(v)){ toast('KEYGEN → '+t('ws_go')); return; }   // les clés passent seulement par les étapes
   wsSend(v); q('ser-in').value='';
 }
+
+/* ── [V3.0.8] Flash depuis Chrome (esptool-js, fichier .merged.bin à l'adresse 0) ── */
+function binStr(u8){ var s='', C=0x8000; for(var i=0;i<u8.length;i+=C)s+=String.fromCharCode.apply(null,u8.subarray(i,i+C)); return s; }
+async function wsFlash(){
+  if(WS.busy||WS.flashing)return;
+  if(!('serial' in navigator)){ toast(t('ws_noserial')); return; }
+  var src=(document.querySelector('input[name=fl-src]:checked')||{}).value||'pub', erase=q('fl-erase').checked, data=null, label='';
+  try{
+    WS.flashing=true; wsFlashSay('…'); wsRender();
+    if(src==='file'){
+      var f=q('fl-file').files[0]; if(!f)throw new Error(t('fl_pick'));
+      data=new Uint8Array(await f.arrayBuffer()); label=f.name;
+    } else {
+      var cur=(OTA.rel||[]).filter(function(r){ return r.current&&r.merged; })[0];
+      if(!cur)throw new Error(t('fl_nopub'));
+      var dir=cur.version.replace(/\./g,'_');
+      wsFlashSay(t('fl_dl')+' '+cur.version+'…');
+      var rr=await fetch(SUPABASE_URL+'/storage/v1/object/public/firmware/'+dir+'/merged.bin',{cache:'no-store'});
+      if(!rr.ok)throw new Error('HTTP '+rr.status);
+      data=new Uint8Array(await rr.arrayBuffer()); label=cur.version;
+    }
+    if(data.length<150000||data[0]!==0xE9)throw new Error(t('fl_bad'));
+    await wsClose();
+    var mod=await import('./esptool-0.5.4.js');
+    var port=WS.lastPort||await navigator.serial.requestPort(); WS.lastPort=port;
+    var tr=new mod.Transport(port,false);
+    var ld=new mod.ESPLoader({transport:tr,baudrate:460800,romBaudrate:115200,
+      terminal:{clean:function(){},writeLine:function(l){ wsLog(l); },write:function(d){}}});
+    wsFlashSay(t('fl_conn'));
+    var chip=await ld.main();
+    if(!/ESP32(?!-[CHS])/.test(String(chip)))throw new Error(t('fl_chip')+' '+chip);
+    await ld.writeFlash({fileArray:[{data:binStr(data),address:0}],flashSize:'keep',flashMode:'keep',flashFreq:'keep',
+      eraseAll:erase,compress:true,reportProgress:function(i,w,tt){ wsFlashSay(t('fl_write')+' '+Math.round(w*100/tt)+'%'); }});
+    try{ await ld.after('hard_reset'); }catch(e){}
+    try{ await tr.disconnect(); }catch(e){}
+    wsFlashSay('✓ '+label+' — '+t('fl_ok'),true);
+    WS.st={}; WS.r={};
+    WS.flashing=false; wsRender();
+    await wsSleep(1500);
+    wsRun('usb');
+  }catch(e){
+    wsFlashSay('⛔ '+esc(e&&e.message||String(e)),false,true);
+  } finally { WS.flashing=false; wsRender(); }
+}
+function wsFlashSay(m,ok,bad){ var e=q('fl-msg'); if(e)e.innerHTML='<div class="'+(bad?'err':ok?'ok':'warn')+'">'+m+'</div>'; WS.flashMsg=e?e.innerHTML:''; }
+
 function wsRender(){
   var e=q('ws-steps'); if(!e)return;
-  var S=[[1,'ws1','ws1s'],[2,'ws2','ws2s'],[3,'ws3','ws3s'],[4,'ws4','ws4s'],[5,'ws5','ws5s'],[6,'ws6','ws6s'],[7,'ws7','ws7s']];
-  var h='<h3>🛠 '+t('atelier')+'</h3>';
+  var S={usb:['ws1','ws1s'],id:['ws2','ws2s'],keys:['ws3','ws3s'],ota:['ws_ota','ws_otas'],reg:['ws4','ws4s'],box:['ws5','ws5s'],test:['ws6','ws6s'],lab:['ws7','ws7s']};
+  var cur=(OTA.rel||[]).filter(function(r){ return r.current&&r.merged; })[0];
+  var h='<h3>⚡ '+t('fl_t')+'</h3>';
   if(!('serial' in navigator))h+='<div class="err">'+t('ws_noserial')+'</div>';
-  h+=S.map(function(s){
-    var k=s[0], st=WS.st[k]||'', r=WS.r[k]||'', x='';
-    if(k===5)x='<div class="grid2" style="margin-top:6px"><div><div class="lbl">'+t('ws_box_user')+'</div><input class="in mono" id="ws-user" value="TAYOGA-BOX"></div>'+
+  h+='<p class="sub" style="margin:0 0 8px">'+t('fl_p')+'</p>'+
+    '<label class="rad"><input type="radio" name="fl-src" value="pub" '+(cur?'checked':'disabled')+'> '+t('fl_src_pub')+' <b class="mono">'+(cur?esc(cur.version):'—')+'</b></label>'+
+    '<label class="rad"><input type="radio" name="fl-src" value="file" '+(cur?'':'checked')+'> '+t('fl_src_file')+' <input type="file" id="fl-file" accept=".bin"></label>'+
+    '<label class="rad"><input type="checkbox" id="fl-erase" checked> '+t('fl_erase')+'</label>'+
+    '<div id="fl-msg">'+(WS.flashMsg||'')+'</div>'+
+    '<div class="row" style="justify-content:flex-start"><button class="btn o" '+(WS.flashing||WS.busy?'disabled':'')+' onclick="wsFlash()">⚡ '+t('fl_go')+'</button></div>'+
+    '<h3 style="margin-top:16px">🛠 '+t('atelier')+'</h3>';
+  h+=WS_STEPS.map(function(k,ix){
+    var st=WS.st[k]||'', r=WS.r[k]||'', x='';
+    if(k==='box')x='<div class="grid2" style="margin-top:6px"><div><div class="lbl">'+t('ws_box_user')+'</div><input class="in mono" id="ws-user" value="TAYOGA-BOX"></div>'+
       '<div><div class="lbl">'+t('ws_port_dev')+'</div><input class="in mono" id="ws-port" value="8883" inputmode="numeric"></div></div>'+
       '<div class="lbl">'+t('ws_box_pass')+'</div><input class="in mono" id="ws-pass" type="password" autocomplete="new-password" placeholder="'+(WS.boxPass?'••••••••':'')+'">';
-    if(k===7&&WS.id)x='<div class="lab" id="ws-lab"><b>TAYOGA-'+esc(WS.id)+'</b><small>ID '+esc(WS.id)+' · Wi-Fi TAYOGA-'+esc(WS.id)+'</small></div>'+
+    if(k==='lab'&&WS.id)x='<div class="lab" id="ws-lab"><b>TAYOGA-'+esc(WS.id)+'</b><small>ID '+esc(WS.id)+' · Wi-Fi TAYOGA-'+esc(WS.id)+'</small></div>'+
       '<div class="row" style="justify-content:flex-start"><button class="btn o" onclick="window.print()">🖨 '+t('ws_print')+'</button></div>';
-    return '<div class="st '+st+'"><div class="n">'+(st==='ok'?'✓':k)+'</div><div class="c"><b>'+t(s[1])+'</b><small>'+t(s[2])+'</small>'+
+    var skip=(k==='test'||k==='ota')?'<button class="btn o" onclick="wsSkip(\''+k+'\')">'+t('ws_skip')+'</button>':'';
+    return '<div class="st '+st+'"><div class="n">'+(st==='ok'?'✓':(ix+1))+'</div><div class="c"><b>'+t(S[k][0])+'</b><small>'+t(S[k][1])+'</small>'+
       (r?'<div class="r">'+r+'</div>':'')+x+
-      (st==='bad'?'<div class="row" style="justify-content:flex-start"><button class="btn o" onclick="wsRun('+k+')">↻ '+t('ws_retry')+'</button>'+(k===6?'<button class="btn o" onclick="wsSet(6,\'ok\',\'—\');wsRun(7)">'+t('ws_skip')+'</button>':'')+'</div>':'')+
+      (st==='bad'?'<div class="row" style="justify-content:flex-start"><button class="btn o" onclick="wsRun(\''+k+'\')">↻ '+t('ws_retry')+'</button>'+skip+'</div>':'')+
       '</div></div>';
   }).join('');
-  h+='<div class="row">'+(WS.st[7]==='ok'?'<button class="btn g" onclick="wsNext()">➜ '+t('ws_next')+'</button>':'<button class="btn g" '+(WS.busy?'disabled':'')+' onclick="wsRun(WS.port?2:1)">▶ '+t('ws_go')+'</button>')+'</div>';
-  var keep=q('ws-pass')&&q('ws-pass').value;
+  h+='<div class="row">'+(WS.st.lab==='ok'?'<button class="btn g" onclick="wsNext()">➜ '+t('ws_next')+'</button>':'<button class="btn g" '+(WS.busy||WS.flashing?'disabled':'')+' onclick="wsRun(WS.port?\'id\':\'usb\')">▶ '+t('ws_go')+'</button>')+'</div>';
+  var keep=q('ws-pass')&&q('ws-pass').value, fl=q('fl-file')&&q('fl-file').files[0], er=q('fl-erase')?q('fl-erase').checked:true;
   e.innerHTML=h;
   if(keep&&q('ws-pass'))q('ws-pass').value=keep;
+  if(q('fl-erase'))q('fl-erase').checked=er;
+  if(fl&&q('fl-file')){ try{ var dt=new DataTransfer(); dt.items.add(fl); q('fl-file').files=dt.files; }catch(x){} }
+}
+
+/* ══ [V3.0.8] Mises à jour : signature ECDSA P-256 dans le navigateur ══
+   La clé PRIVÉE est un fichier sur la clé USB de l'administrateur : elle est
+   lue ici le temps de signer, jamais envoyée. Seule la clé PUBLIQUE est au
+   serveur ; l'atelier la donne aux boîtiers (SETOTAPUB, USB seulement). */
+var OTA={pub:null,rel:[],fw:{}}, OF={bin:null,merged:null,key:null,ver:'',size:0,sha:''};
+function otaLoad(){
+  sb.rpc('admin_ota_get').then(function(r){
+    if(r.error)return;
+    var d=r.data||{}; OTA={pub:d.pub,rel:d.releases||[],fw:d.fw||{}};
+    otaRender(); wsRender();
+  });
+}
+function hx(buf){ return Array.prototype.map.call(new Uint8Array(buf),function(b){ return ('0'+b.toString(16)).slice(-2); }).join(''); }
+function unhx(h){ var a=new Uint8Array(h.length/2); for(var i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16); return a; }
+function verDir(v){ return v.replace(/\./g,'_'); }
+function fwPub(path){ return SUPABASE_URL+'/storage/v1/object/public/firmware/'+path; }
+async function otaKeyGen(){
+  if(OTA.pub&&!confirm(t('ota_replace')))return;
+  var kp=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
+  var jwk=await crypto.subtle.exportKey('jwk',kp.privateKey);
+  var pub=hx(await crypto.subtle.exportKey('raw',kp.publicKey)).toUpperCase();
+  var blob=new Blob([JSON.stringify({tayoga:'ota-private-key',created:new Date().toISOString(),pub:pub,jwk:jwk},null,1)],{type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tayoga_update.private'; document.body.appendChild(a); a.click(); a.remove();
+  var r=await sb.rpc('admin_ota_pub_set',{p_pub:pub,p_force:!!OTA.pub});
+  if(r.error){ toast(errText(r.error)); return; }
+  toast(t('ota_key_ok')); otaLoad();
+}
+async function otaPick(){
+  OF={bin:q('ota-bin').files[0]||null,merged:q('ota-merged').files[0]||null,key:null,ver:'',size:0,sha:'',err:''};
+  var kf=q('ota-key').files[0];
+  try{
+    if(OF.bin){
+      var m=/V?(\d+)[._](\d+)[._](\d+)/i.exec(OF.bin.name);
+      OF.ver=m?('V'+m[1]+'.'+m[2]+'.'+m[3]):'';
+      if(/merged/i.test(OF.bin.name))OF.err=t('ota_err_merged');
+      var buf=await OF.bin.arrayBuffer(); OF.size=buf.byteLength;
+      OF.sha=hx(await crypto.subtle.digest('SHA-256',buf));
+      if(new Uint8Array(buf)[0]!==0xE9)OF.err=t('fl_bad');
+    }
+    if(OF.merged&&!/merged/i.test(OF.merged.name))OF.err=t('ota_err_notmerged');
+    if(kf){
+      var k=JSON.parse(await kf.text());
+      if(!k||k.tayoga!=='ota-private-key'||!k.jwk)throw new Error(t('ota_err_key'));
+      OF.key=k;
+      if(String(k.pub).toUpperCase()!==String(OTA.pub||'').toUpperCase())OF.err=t('ota_err_pub');
+    }
+  }catch(e){ OF.err=e.message||String(e); }
+  otaRender();
+}
+function verNum(v){ var m=/V(\d+)\.(\d+)\.(\d+)/.exec(v||''); return m?(+m[1])*1e6+(+m[2])*1e3+(+m[3]):0; }
+async function otaPublish(){
+  var b=q('ota-go'); if(b)b.disabled=true;
+  try{
+    if(!OF.bin||!OF.key||!OF.ver||OF.err)throw new Error(OF.err||t('ota_err_missing'));
+    var msg=OF.ver+'|'+OF.size+'|'+OF.sha;
+    var key=await crypto.subtle.importKey('jwk',OF.key.jwk,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
+    var sig=hx(await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,new TextEncoder().encode(msg))).toUpperCase();
+    var pk=await crypto.subtle.importKey('raw',unhx(OTA.pub),{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+    if(!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pk,unhx(sig),new TextEncoder().encode(msg)))throw new Error(t('ota_err_pub'));
+    var dir=verDir(OF.ver), st=sb.storage.from('firmware'), notes=(q('ota-notes').value||'').trim().slice(0,200);
+    otaSay(t('ota_up')+' app.bin…');
+    var u=await st.upload(dir+'/app.bin',OF.bin,{upsert:true,contentType:'application/octet-stream',cacheControl:'31536000'});
+    if(u.error)throw u.error;
+    if(OF.merged){ otaSay(t('ota_up')+' merged.bin…');
+      u=await st.upload(dir+'/merged.bin',OF.merged,{upsert:true,contentType:'application/octet-stream',cacheControl:'31536000'}); if(u.error)throw u.error; }
+    var man={version:OF.ver,size:OF.size,sha256:OF.sha,sig:sig,url:fwPub(dir+'/app.bin')};
+    if(notes)man.notes=notes;
+    var mb=new Blob([JSON.stringify(man)],{type:'application/json'});
+    u=await st.upload(dir+'/manifest.json',mb,{upsert:true,contentType:'application/json',cacheControl:'31536000'}); if(u.error)throw u.error;
+    u=await st.upload('manifest.json',mb,{upsert:true,contentType:'application/json',cacheControl:'30'}); if(u.error)throw u.error;
+    var r=await sb.rpc('admin_ota_publish',{p_version:OF.ver,p_size:OF.size,p_sha:OF.sha,p_notes:notes||null,p_merged:!!OF.merged});
+    if(r.error)throw r.error;
+    OF={bin:null,merged:null,key:null,ver:'',size:0,sha:''};
+    ['ota-bin','ota-merged','ota-key','ota-notes'].forEach(function(i){ q(i).value=''; });
+    toast('✓ '+man.version+' — '+t('ota_pub_ok')); otaSay(''); otaLoad();
+  }catch(e){ otaSay('⛔ '+esc(errText(e)),true); }
+  finally{ if(b)b.disabled=false; }
+}
+async function otaBack(v){
+  if(!confirm(t('ota_back_q').replace('%',v)))return;
+  try{
+    var st=sb.storage.from('firmware'), d=await st.download(verDir(v)+'/manifest.json');
+    if(d.error)throw d.error;
+    var u=await st.upload('manifest.json',d.data,{upsert:true,contentType:'application/json',cacheControl:'30'}); if(u.error)throw u.error;
+    var r=await sb.rpc('admin_ota_current',{p_version:v}); if(r.error)throw r.error;
+    toast('✓ '+v); otaLoad();
+  }catch(e){ toast(errText(e)); }
+}
+function otaSay(m,bad){ var e=q('ota-msg'); if(e)e.innerHTML=m?'<div class="'+(bad?'err':'warn')+'">'+m+'</div>':''; }
+function otaRender(){
+  var e=q('ota-pub'); if(!e)return;
+  e.innerHTML=OTA.pub
+    ?'<div class="ok">'+t('ota_pub_has')+' <span class="mono">'+esc(OTA.pub.slice(0,6)+'…'+OTA.pub.slice(-4))+'</span></div><div class="row" style="justify-content:flex-start"><button class="btn o" onclick="otaKeyGen()">'+t('ota_regen')+'</button></div>'
+    :'<div class="warn">'+t('ota_nokey')+'</div><div class="row" style="justify-content:flex-start"><button class="btn g" onclick="otaKeyGen()">🔐 '+t('ota_gen')+'</button></div>';
+  var cur=(OTA.rel||[]).filter(function(r){ return r.current; })[0];
+  var tot=0, upd=0; Object.keys(OTA.fw||{}).forEach(function(v){ tot+=OTA.fw[v]; if(cur&&v===cur.version)upd+=OTA.fw[v]; });
+  q('ota-cur').innerHTML=cur
+    ?kv(t('ota_ver'),'<b class="mono">'+esc(cur.version)+'</b>')+kv(t('ota_at'),fmtD(cur.at,true))+kv(t('ota_size'),'<bdi dir=ltr>'+(cur.size/1048576).toFixed(2)+' MB</bdi>')+
+     kv(t('ota_upd'),'<bdi dir=ltr>'+upd+' / '+tot+'</bdi>')+(cur.notes?kv(t('ota_notes'),esc(cur.notes)):'')+kv(t('ota_merged'),cur.merged?'✓':'—')
+    :'<p class="d">'+t('ota_none')+'</p>';
+  q('ota-hist').innerHTML=(OTA.rel||[]).map(function(r){
+    return '<tr><td class="mono">'+esc(r.version)+'</td><td>'+fmtD(r.at)+'</td><td>'+(r.current?'<span class="pill g">'+t('ota_cur')+'</span>':'<button class="btn o sm" onclick="otaBack(\''+esc(r.version)+'\')">↩ '+t('ota_back')+'</button>')+'</td></tr>';
+  }).join('')||'<tr><td colspan="3" class="d">—</td></tr>';
+  var c=[];
+  if(OF.bin)c.push((OF.ver?'✓ '+esc(OF.bin.name)+' · '+OF.size.toLocaleString()+' octets · '+esc(OF.ver):'⛔ '+t('ota_err_ver')));
+  if(OF.sha)c.push('✓ SHA-256 '+OF.sha.slice(0,12)+'…');
+  if(OF.merged)c.push('✓ '+esc(OF.merged.name));
+  if(OF.key&&!OF.err)c.push('✓ '+t('ota_key_match'));
+  if(OF.ver&&cur&&verNum(OF.ver)<=verNum(cur.version))c.push('⚠️ '+t('ota_older')+' ('+esc(cur.version)+')');
+  if(OF.err)c.push('⛔ '+esc(OF.err));
+  q('ota-chk').innerHTML=c.join('<br>');
+  var go=q('ota-go'); if(go){ go.disabled=!(OF.bin&&OF.key&&OF.ver&&!OF.err&&OTA.pub); go.textContent='🚀 '+t('ota_publish')+(OF.ver?' '+OF.ver:''); }
 }
 
 applyLang();
