@@ -340,6 +340,8 @@ var T={
  fl_erase:['مسح كامل قبل الكتابة (جهاز جديد أو من الصفر)','Effacement complet avant écriture (boîtier neuf ou repartir de zéro)'],
  fl_go:['فلاش','Flasher'], fl_pick:['اختر ملف .merged.bin','Choisissez un fichier .merged.bin'], fl_nopub:['لا توجد نسخة منشورة بملف فلاش (merged)','Aucune version publiée avec fichier de flash (merged)'],
  fl_dl:['تحميل','Téléchargement'], fl_bad:['ليس ملف فيرموير ESP32','Ce n\'est pas un firmware ESP32'], fl_conn:['الاتصال بالشريحة… (إن لم يبدأ: اضغط BOOT)','Connexion à la puce… (si rien ne se passe : appuyez sur BOOT)'],
+ fl_retry:['أعد: اضغط وخلّ زر BOOT مضغوطًا، ثم «فلاش»، ولا تطلقه حتى تظهر النسبة.','Réessayez : maintenez BOOT enfoncé, cliquez « Flasher », et ne le relâchez qu\'à l\'apparition du pourcentage.'],
+ fl_noconn:['الشريحة لم تجب في 40 ثانية.','La puce n\'a pas répondu en 40 s.'],
  fl_chip:['شريحة غير مدعومة:','Puce non prise en charge :'], fl_write:['الكتابة','Écriture'], fl_ok:['تم. تبدأ الخطوات الآن.','terminé. Les étapes démarrent.'],
  a_ota_key:['مفتاح التحديثات','Clé des mises à jour'], a_ota_publish:['نشر تحديث','Publication d\'une mise à jour'], a_ota_rollback:['رجوع لنسخة سابقة','Retour à une version'], a_place_delete:['حذف مكان','Lieu supprimé'],
  atelier_sub:['تحضير جهاز جديد بالـ USB من Chrome على الحاسوب: الفلاش، المفاتيح، التسجيل، الخادم والملصق.','Préparer un boîtier neuf par USB depuis Chrome sur ordinateur : flash, clés, inscription, serveur et étiquette.'],
@@ -751,11 +753,11 @@ async function wsFlash(){
     await wsClose();
     var mod=await import('./esptool-0.5.4.js');
     var port=WS.lastPort||await navigator.serial.requestPort(); WS.lastPort=port;
-    var tr=new mod.Transport(port,false);
+    var tr=new mod.Transport(port,false); WS.tr=tr;
     var ld=new mod.ESPLoader({transport:tr,baudrate:460800,romBaudrate:115200,
       terminal:{clean:function(){},writeLine:function(l){ wsLog(l); },write:function(d){}}});
     wsFlashSay(t('fl_conn'));
-    var chip=await ld.main();
+    var chip=await Promise.race([ld.main(),new Promise(function(_,rj){ setTimeout(function(){ rj(new Error(t('fl_noconn'))); },40000); })]);
     if(!/ESP32(?!-[CHS])/.test(String(chip)))throw new Error(t('fl_chip')+' '+chip);
     await ld.writeFlash({fileArray:[{data:binStr(data),address:0}],flashSize:'keep',flashMode:'keep',flashFreq:'keep',
       eraseAll:erase,compress:true,reportProgress:function(i,w,tt){ wsFlashSay(t('fl_write')+' '+Math.round(w*100/tt)+'%'); }});
@@ -767,8 +769,10 @@ async function wsFlash(){
     await wsSleep(1500);
     wsRun('usb');
   }catch(e){
-    wsFlashSay('⛔ '+esc(e&&e.message||String(e)),false,true);
-  } finally { WS.flashing=false; wsRender(); }
+    // [V3.0.8] libérer le port : sinon l'essai suivant restait bloqué sur « Connexion à la puce »
+    try{ if(WS.tr)await WS.tr.disconnect(); }catch(x){}
+    wsFlashSay('⛔ '+esc(e&&e.message||String(e))+'<br>'+t('fl_retry'),false,true);
+  } finally { WS.tr=null; WS.flashing=false; wsRender(); }
 }
 function wsFlashSay(m,ok,bad){ var e=q('fl-msg'); if(e)e.innerHTML='<div class="'+(bad?'err':ok?'ok':'warn')+'">'+m+'</div>'; WS.flashMsg=e?e.innerHTML:''; }
 
