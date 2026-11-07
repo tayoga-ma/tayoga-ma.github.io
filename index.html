@@ -84,6 +84,23 @@ small.d{color:var(--dim);font-size:12px}
 .mask{cursor:pointer;border-bottom:1px dashed var(--bd2)}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--bd2);border-radius:12px;padding:10px 16px;font-size:13.5px;z-index:20;display:none}
 .toast.on{display:block}
+.vn{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}.vn .w{stroke:var(--g)}
+h2 .vn{width:24px;height:24px;vertical-align:-5px}
+/* [V3.0.7] Atelier */
+.ws{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.st{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--bd)}
+.st:last-of-type{border-bottom:0}
+.st .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--s3);color:var(--dim);display:grid;place-items:center;font-weight:800;font-size:13px}
+.st.ok .n{background:#22c55e;color:#06210f}.st.run .n{background:var(--b);color:#06121f}.st.bad .n{background:var(--r);color:#250606}
+.st .c{flex:1;min-width:0}.st .c b{display:block;font-size:14.5px}.st .c small{color:var(--dim);font-size:12.5px;line-height:1.6;display:block;margin-top:2px}
+.st .c .r{margin-top:6px;font-size:13px}
+.ser{background:#05070b;border:1px solid var(--bd);border-radius:12px;height:300px;overflow:auto;padding:10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#9fb0c8;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-all}
+.ser .me{color:var(--g)}
+.lab{border:2px dashed var(--bd2);border-radius:12px;padding:14px;text-align:center;direction:ltr;margin-top:8px}
+.lab b{display:block;font:800 22px/1.3 ui-monospace,Menlo,monospace;letter-spacing:1px}
+.lab small{color:var(--dim)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media print{body *{visibility:hidden}.lab,.lab *{visibility:visible}.lab{position:fixed;top:0;left:0;border:1px solid #000;color:#000}}
 @media(max-width:900px){
   .nav{display:none}.kpis{grid-template-columns:repeat(2,1fr)}main{padding:14px 16px 90px}
   .tabs{display:flex;position:fixed;bottom:0;left:0;right:0;padding-bottom:env(safe-area-inset-bottom);background:var(--s1);border-top:1px solid var(--bd);z-index:4}
@@ -91,6 +108,7 @@ small.d{color:var(--dim);font-size:12px}
   .tabs a.on{color:var(--g);font-weight:700}
   .tabs a i{display:block;font-style:normal;font-size:18px}
   .search{width:100%}
+  .ws{grid-template-columns:1fr}
   .hm{display:none}
 }
 </style>
@@ -113,8 +131,9 @@ small.d{color:var(--dim);font-size:12px}
     <div class="role" data-t="admin_page"></div>
     <a class="on" data-p="home">🏠 <span data-t="home"></span></a>
     <a data-p="clients">👥 <span data-t="clients"></span> <span class="c" id="c-cl">0</span></a>
-    <a data-p="devices">📦 <span data-t="devices"></span> <span class="c" id="c-dv">0</span></a>
+    <a data-p="devices"><svg class="vn" viewBox="0 0 24 24"><path d="M2 15.5h4.5M17.5 15.5H22M2 12.5v6M22 12.5v6"/><circle cx="12" cy="15.5" r="5"/><path d="M9.8 15.5h4.4"/><path class="w" d="M8.6 6.6a5 5 0 0 1 6.8 0M10.3 8.7a2.4 2.4 0 0 1 3.4 0"/></svg> <span data-t="devices"></span> <span class="c" id="c-dv">0</span></a>
     <a data-p="log">🧾 <span data-t="log"></span></a>
+    <a data-p="atelier">🛠 <span data-t="atelier"></span></a>
     <div class="me"><div><span data-t="admin"></span><br><span class="mono" id="me-mail"></span></div>
       <button class="lnk" onclick="toggleLang()">العربية / Français</button>
       <button class="lnk" onclick="signOut()" data-t="signout"></button></div>
@@ -150,12 +169,34 @@ small.d{color:var(--dim);font-size:12px}
       <div class="top"><h1 data-t="log"></h1></div><p class="sub" data-t="log_sub"></p>
       <div class="box"><table><thead><tr><th data-t="date"></th><th data-t="action"></th><th data-t="device"></th><th data-t="details"></th></tr></thead><tbody id="t-log"></tbody></table></div>
     </section>
+    <section class="page" id="p-atelier">
+      <div class="top"><h1 data-t="atelier"></h1></div><p class="sub" data-t="atelier_sub"></p>
+      <div class="ws">
+        <div>
+          <div class="box" id="ws-steps"></div>
+          <div class="box"><h3>🌐 <span data-t="srv_t"></span></h3>
+            <p class="sub" style="margin:0 0 6px" data-t="srv_p"></p>
+            <div class="lbl" data-t="srv_host"></div><input class="in mono" id="m-host" placeholder="xxxxxx.ala.eu-central-1.emqxsl.com" autocomplete="off" spellcheck="false">
+            <div class="grid2"><div><div class="lbl" data-t="srv_port"></div><input class="in mono" id="m-port" value="8084" inputmode="numeric"></div>
+              <div><div class="lbl" data-t="srv_user"></div><input class="in mono" id="m-user" value="TAYOGA-APP" autocomplete="off"></div></div>
+            <div class="lbl" data-t="srv_pass"></div><input class="in mono" id="m-pass" type="password" autocomplete="new-password">
+            <div id="m-msg"></div>
+            <div class="row"><button class="btn g" onclick="mqttSave()" data-t="save"></button></div>
+          </div>
+        </div>
+        <div>
+          <div class="box"><h3>⌨️ <span data-t="ser_t"></span> <small class="d" id="ser-st"></small></h3><div class="ser" id="ser"></div>
+            <div class="row" style="justify-content:flex-start"><input class="in mono" id="ser-in" style="flex:1" placeholder="STATUS" onkeydown="if(event.key==='Enter'){wsManual();}"><button class="btn o" onclick="wsManual()" data-t="send"></button></div></div>
+        </div>
+      </div>
+    </section>
   </main>
   <div class="tabs">
     <a class="on" data-p="home"><i>🏠</i><span data-t="home"></span></a>
     <a data-p="clients"><i>👥</i><span data-t="clients"></span></a>
-    <a data-p="devices"><i>📦</i><span data-t="devices"></span></a>
+    <a data-p="devices"><i><svg class="vn" viewBox="0 0 24 24"><path d="M2 15.5h4.5M17.5 15.5H22M2 12.5v6M22 12.5v6"/><circle cx="12" cy="15.5" r="5"/><path d="M9.8 15.5h4.4"/><path class="w" d="M8.6 6.6a5 5 0 0 1 6.8 0M10.3 8.7a2.4 2.4 0 0 1 3.4 0"/></svg></i><span data-t="devices"></span></a>
     <a data-p="log"><i>🧾</i><span data-t="log"></span></a>
+    <a data-p="atelier"><i>🛠</i><span data-t="atelier"></span></a>
   </div>
 </div>
 
@@ -186,6 +227,7 @@ small.d{color:var(--dim);font-size:12px}
 
 <script src="supabase.js"></script>
 <script>
+var VAL='<svg class="vn" viewBox="0 0 24 24"><path d="M2 15.5h4.5M17.5 15.5H22M2 12.5v6M22 12.5v6"/><circle cx="12" cy="15.5" r="5"/><path d="M9.8 15.5h4.4"/><path class="w" d="M8.6 6.6a5 5 0 0 1 6.8 0M10.3 8.7a2.4 2.4 0 0 1 3.4 0"/></svg>';
 var SUPABASE_URL='https://xecfziyhfobdfxishcbf.supabase.co';
 var SUPABASE_KEY='sb_publishable_LKN_xeRiaDRPyKiuVfnSNQ_ghHqrEKC';
 
@@ -237,6 +279,30 @@ var T={
  a_register:['إضافة جهاز','Ajout boîtier'], a_invite:['دعوة مسؤول','Invitation'], a_invite_accept:['قبول دعوة','Invitation acceptée'],
  a_member_remove:['إزالة مسؤول','Responsable retiré'], a_owner_transfer:['نقل الملكية','Transfert de propriété'], a_account_delete:['حذف حساب','Compte supprimé'],
  show:['اضغط للإظهار','toucher pour afficher'],
+ atelier:['الورشة','Atelier'],
+ atelier_sub:['تحضير جهاز جديد بالـ USB من Chrome على الحاسوب: المفاتيح والتسجيل والخادم والملصق. الفلاش يبقى في Arduino IDE.','Préparer un boîtier neuf par USB depuis Chrome sur ordinateur : clés, inscription, serveur et étiquette. Le flash reste dans Arduino IDE.'],
+ ws_noserial:['هذه الصفحة تحتاج Chrome أو Edge على الحاسوب (Web Serial). الهاتف لا يدعمها.','Cette page demande Chrome ou Edge sur ordinateur (Web Serial). Le téléphone ne la gère pas.'],
+ ws1:['ربط الجهاز بالـ USB','Brancher le boîtier en USB'], ws1s:['أغلق «Serial Monitor» في Arduino IDE أولاً، ثم اختر المنفذ.','Fermez d\'abord le « Serial Monitor » d\'Arduino IDE, puis choisissez le port.'],
+ ws2:['قراءة رقم الجهاز (ID)','Lire l\'identifiant (ID)'], ws2s:['الأمر ID','Commande ID'],
+ ws3:['توليد المفاتيح داخل الجهاز','Générer les clés dans le boîtier'], ws3s:['KEYGEN: الجهاز يولّد مفتاحه ومفتاح المصنع. لا يراهما أحد.','KEYGEN : le boîtier tire sa clé et sa clé d\'usine. Personne ne les voit.'],
+ ws4:['التسجيل في TAYOGA','Inscription chez TAYOGA'], ws4s:['الجهاز يصبح «حرًّا — ينتظر CONFIG».','Le boîtier devient « libre — attend CONFIG ».'],
+ ws5:['حساب الخادم للجهاز (TAYOGA-BOX)','Compte serveur du boîtier (TAYOGA-BOX)'], ws5s:['كلمة السر تُكتب مرة في هذه الجلسة، لا تُحفظ في أي مكان.','Le mot de passe se tape une fois par session ; il n\'est enregistré nulle part.'],
+ ws6:['تجربة الاتصال بالخادم','Tester la liaison au serveur'], ws6s:['MQTT:STATUS حتى «Connecte OK» (يلزم الشريحة أو الويفي).','MQTT:STATUS jusqu\'à « Connecte OK » (SIM ou Wi-Fi nécessaire).'],
+ ws7:['الملصق','Étiquette'], ws7s:['اطبعه أو انسخه في آلة الملصقات.','Imprimez-la ou recopiez-la sur l\'étiqueteuse.'],
+ ws_go:['ابدأ','Démarrer'], ws_next:['جهاز آخر','Boîtier suivant'], ws_retry:['إعادة','Réessayer'], ws_skip:['تخطي','Passer'],
+ ws_force:['هذا الجهاز فيه مفاتيح من قبل. استبدالها؟ (يجب ربطه من جديد بزر CONFIG)','Ce boîtier a déjà des clés. Les remplacer ? (il faudra le relier de nouveau avec CONFIG)'],
+ ws_owned:['هذا الجهاز مربوط بزبون: فك الربط أولاً من صفحة الأجهزة.','Ce boîtier est relié à un client : déliez-le d\'abord depuis la page Boîtiers.'],
+ ws_box_user:['المستخدم','Utilisateur'], ws_box_pass:['كلمة سر TAYOGA-BOX','Mot de passe TAYOGA-BOX'], ws_port_dev:['منفذ الجهاز','Port du boîtier'],
+ ws_nohost:['اضبط عنوان الخادم أولاً (البطاقة «الاتصال بالخادم»).','Réglez d\'abord l\'adresse du serveur (carte « Connexion au serveur »).'],
+ ws_print:['طباعة','Imprimer'], ws_timeout:['لم يجب الجهاز.','Le boîtier n\'a pas répondu.'], ws_mqtt_ko:['لم يتصل بعد. تحقق من الشريحة/الهوائي، ثم أعد.','Pas encore connecté. Vérifiez SIM/antenne, puis réessayez.'],
+ ser_t:['منفذ USB','Port USB'], send:['إرسال','Envoyer'], save:['حفظ','Enregistrer'],
+ srv_t:['الاتصال بالخادم (للتطبيقات)','Connexion au serveur (applications)'],
+ srv_p:['تطبيقات الزبائن المربوطة تأخذ هذه المعلومات تلقائيًا. كلمة السر تُحفظ مشفّرة (Vault) ولا تُعرض أبدًا.','Les applications des clients reliés reçoivent ces réglages automatiquement. Le mot de passe est chiffré (Vault) et jamais réaffiché.'],
+ srv_host:['عنوان الخادم (EMQX)','Adresse du serveur (EMQX)'], srv_port:['منفذ التطبيق (WebSocket)','Port de l\'application (WebSocket)'], srv_user:['مستخدم التطبيق','Utilisateur de l\'application'],
+ srv_pass:['كلمة سر TAYOGA-APP (فارغ = بدون تغيير)','Mot de passe TAYOGA-APP (vide = inchangé)'], srv_has:['كلمة السر محفوظة ✓','Mot de passe enregistré ✓'], srv_nopass:['لا توجد كلمة سر بعد','Pas encore de mot de passe'],
+ rec:['مفتاح المصنع','Clé d\'usine'], rec_no:['لا (جهاز قديم: يُعاد عبر الورشة)','Non (ancien : repasser par l\'atelier)'],
+ a_setup:['جلب المفتاح (تطبيق)','Clé récupérée (app)'], a_key_rotate:['مفتاح جديد عن بُعد','Nouvelle clé à distance'], a_admin_mqtt:['إعداد الخادم','Réglage du serveur'],
+ newkey:['مفتاح جديد','nouvelle clé'],
  note_key:['الملاحظة تشبه مفتاحًا: لا تضع المفتاح هنا (الملاحظة ليست سرية). ضعه في خانة المفتاح فقط.','La note ressemble à une clé : ne mettez pas la clé ici (la note n\'est pas secrète). Mettez-la seulement dans le champ Clé.']
 };
 var LANG='ar'; try{ LANG=localStorage.getItem('tayoga_admin_lang')||'ar'; }catch(e){}
@@ -246,6 +312,7 @@ function q(id){ return document.getElementById(id); }
 function applyLang(){
   document.documentElement.lang=LANG; document.documentElement.dir=LANG==='fr'?'ltr':'rtl';
   document.querySelectorAll('[data-t]').forEach(function(e){ e.innerHTML=t(e.getAttribute('data-t')); });
+  try{ wsRender(); }catch(e){}
   q('s-cl').placeholder=t('search_cl'); q('s-dv').placeholder=t('search_dv'); q('u-r').placeholder='';
 }
 function toggleLang(){ LANG=LANG==='fr'?'ar':'fr'; try{ localStorage.setItem('tayoga_admin_lang',LANG); }catch(e){} applyLang(); if(DB)renderAll(); }
@@ -283,7 +350,7 @@ function load(){
       if(r.error.message==='denied'){ showLogin(esc(t('not_admin'))+'<br><span class="mono">'+esc(ME&&ME.email||'')+'</span>',true); return; }
       toast(errText(r.error)); return;
     }
-    DB=r.data; index();
+    DB=r.data; index(); mqttLoad();
     q('login').style.display='none'; q('app').style.display='flex';
     q('me-mail').textContent=ME&&ME.email||'';
     renderAll();
@@ -312,6 +379,8 @@ function actDetail(a){
   if(x.was&&U[x.was])s.push('← '+esc(uName(U[x.was])));
   if(x.to&&U[x.to])s.push('→ '+esc(uName(U[x.to])));
   if(x.user&&U[x.user])s.push(esc(uName(U[x.user])));
+  if(x.newkey)s.push('🔑 '+t('newkey'));
+  if(x.host)s.push('<span class="mono">'+esc(x.host)+'</span>');
   return s.join(' · ')||'—';
 }
 function logRow(a){ return '<tr'+(a.device?' class="ck" onclick="openDev(\''+esc(a.device)+'\')"':'')+'><td class="mono">'+fmtD(a.at,true)+'</td><td>'+esc(actLabel(a.action))+'</td><td class="mono">'+esc(a.device||'—')+'</td><td>'+actDetail(a)+'</td></tr>'; }
@@ -361,9 +430,9 @@ function kv(k,v){ return '<div class="kv"><span>'+k+'</span><b>'+v+'</b></div>';
 function openDev(id){
   var d=DV[id]; if(!d)return; _dr={k:'d',id:id};
   var p=d.place&&P[d.place];
-  var h='<h2>📦 '+t('device')+' <span class="mono">'+esc(d.id)+'</span></h2><p class="sub" style="margin:0 0 10px">'+devState(d)+'</p>'+
+  var h='<h2>'+VAL+' '+t('device')+' <span class="mono">'+esc(d.id)+'</span></h2><p class="sub" style="margin:0 0 10px">'+devState(d)+'</p>'+
     kv(t('place'),p?esc(p.name):'—')+kv(t('fw'),'<span class="mono">'+esc(d.fw||'—')+'</span>')+kv(t('sim'),phHtml(d.sim))+
-    kv(t('key'),d.key?t('key_ok'):'<span style="color:var(--r)">'+t('key_no')+'</span>')+kv(t('linked_on'),fmtD(d.claimed,true))+kv(t('created'),fmtD(d.created));
+    kv(t('key'),d.key?t('key_ok'):'<span style="color:var(--r)">'+t('key_no')+'</span>')+kv(t('rec'),d.rec?t('key_ok'):'<span style="color:var(--o)">'+t('rec_no')+'</span>')+kv(t('linked_on'),fmtD(d.claimed,true))+kv(t('created'),fmtD(d.created));
   if(p){
     h+='<div class="sec">'+t('members')+'</div>'+p.mem.map(function(m){ var u=U[m.user]; return '<div class="kv ck" onclick="openCl(\''+esc(m.user)+'\')"><span>'+esc(uName(u))+'</span><b><span class="pill '+(m.role==='owner'?'g':'d')+'">'+t(m.role)+'</span></b></div>'; }).join('');
   }
@@ -379,7 +448,7 @@ function openCl(id){
     kv(t('email'),'<span class="mono">'+esc(u.email||'—')+'</span>')+kv(t('phone'),phHtml(u.phone))+kv(t('created'),fmtD(u.created,true))+kv(t('last_login'),fmtD(u.last,true));
   h+='<div class="sec">'+t('places')+'</div>'+(u.places.map(function(x){
     return '<div class="kv"><span>'+esc(x.p.name)+'</span><b><span class="pill '+(x.role==='owner'?'g':'d')+'">'+t(x.role)+'</span></b></div>'+
-      x.p.devs.map(function(d){ return '<div class="kv ck" onclick="openDev(\''+esc(d.id)+'\')"><span class="mono">&nbsp;&nbsp;📦 '+esc(d.id)+'</span><b>'+devState(d)+'</b></div>'; }).join('');
+      x.p.devs.map(function(d){ return '<div class="kv ck" onclick="openDev(\''+esc(d.id)+'\')"><span class="mono">&nbsp;&nbsp;'+VAL+' '+esc(d.id)+'</span><b>'+devState(d)+'</b></div>'; }).join('');
   }).join('')||'<div class="kv"><span>'+t('none')+'</span></div>');
   q('dr-c').innerHTML=h; q('dr').classList.add('open');
 }
@@ -424,6 +493,160 @@ function go(p){
 }
 document.querySelectorAll('.nav a[data-p],.tabs a').forEach(function(a){ a.onclick=function(){ go(a.getAttribute('data-p')); }; });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeM(); closeDr(); } });
+
+/* ══ [V3.0.7] Connexion MQTT des applications (Vault) ══ */
+var MQ={};
+function mqttLoad(){
+  sb.rpc('admin_mqtt_get').then(function(r){
+    if(r.error)return; MQ=r.data||{};
+    if(MQ.host)q('m-host').value=MQ.host; if(MQ.port)q('m-port').value=MQ.port; if(MQ.user)q('m-user').value=MQ.user;
+    q('m-msg').innerHTML=MQ.pass?'<div class="ok">'+t('srv_has')+(MQ.at?' · '+fmtD(MQ.at,true):'')+'</div>':'<div class="warn">'+t('srv_nopass')+'</div>';
+    wsRender();
+  });
+}
+function mqttSave(){
+  var host=q('m-host').value.trim().toLowerCase(), port=parseInt(q('m-port').value,10), user=q('m-user').value.trim(), pass=q('m-pass').value;
+  sb.rpc('admin_mqtt_set',{p_host:host,p_port:port,p_user:user,p_pass:pass||null}).then(function(r){
+    q('m-pass').value='';
+    if(r.error){ q('m-msg').innerHTML='<div class="err">'+esc(errText(r.error))+'</div>'; return; }
+    toast(t('saved')); mqttLoad();
+  });
+}
+
+/* ══ [V3.0.7] Atelier : boîtier neuf par USB (Web Serial) ══
+   Les clés naissent DANS le boîtier (KEYGEN) ; elles passent ici une fois,
+   vont au serveur, puis sont effacées de la page. Le mot de passe du compte
+   TAYOGA-BOX reste en mémoire le temps de la session, jamais enregistré. */
+var WS={port:null,writer:null,reader:null,buf:'',lines:[],waiters:[],busy:false,id:'',K:'',R:'',st:{},r:{},boxPass:''};
+function wsMask(l){ return String(l).replace(/(K|R)=[0-9A-F]{64}/g,'$1=••••••••').replace(/(SETMQTTPASS:).*/i,'$1***'); }
+function wsLog(l,me){
+  var e=q('ser'); if(!e)return;
+  var d=document.createElement('div'); if(me)d.className='me'; d.textContent=wsMask(l); e.appendChild(d);
+  while(e.childNodes.length>400)e.removeChild(e.firstChild);
+  e.scrollTop=e.scrollHeight;
+}
+function wsLine(l){
+  WS.lines.push(l); if(WS.lines.length>2000)WS.lines.splice(0,500);
+  wsLog(l);
+  WS.waiters.slice().forEach(function(w){ var m=w.re.exec(l); if(m){ WS.waiters.splice(WS.waiters.indexOf(w),1); clearTimeout(w.to); w.res(m); } });
+}
+function wsWait(re,ms){ return new Promise(function(res){ var w={re:re,res:res}; w.to=setTimeout(function(){ var i=WS.waiters.indexOf(w); if(i>=0)WS.waiters.splice(i,1); res(null); },ms); WS.waiters.push(w); }); }
+function wsSend(cmd){ wsLog('> '+cmd,true); return WS.writer.write(new TextEncoder().encode(cmd+'\n')); }
+/* Une commande, et tout ce que le boîtier a écrit jusqu'à « --- fin --- » */
+function wsBlock(cmd,ms){
+  var start=WS.lines.length, p=wsWait(/\[USB\] --- fin ---/,ms||8000);
+  return wsSend(cmd).then(function(){ return p; }).then(function(m){ return m?WS.lines.slice(start).join('\n'):null; });
+}
+function wsSleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+async function wsOpen(){
+  if(WS.port)return true;
+  if(!('serial' in navigator))throw new Error(t('ws_noserial'));
+  var port=await navigator.serial.requestPort();
+  await port.open({baudRate:115200});
+  try{ await port.setSignals({dataTerminalReady:false,requestToSend:false}); }catch(e){}
+  WS.port=port; WS.writer=port.writable.getWriter();
+  var dec=new TextDecoderStream(); port.readable.pipeTo(dec.writable).catch(function(){});
+  WS.reader=dec.readable.getReader();
+  (async function(){
+    try{ for(;;){ var x=await WS.reader.read(); if(x.done)break; WS.buf+=x.value; var i;
+      while((i=WS.buf.indexOf('\n'))>=0){ var l=WS.buf.slice(0,i).replace(/\r$/,''); WS.buf=WS.buf.slice(i+1); wsLine(l); } } }catch(e){}
+    WS.port=null; q('ser-st').textContent=''; wsRender();
+  })();
+  q('ser-st').textContent='● 115200';
+  port.addEventListener&&port.addEventListener('disconnect',function(){ WS.port=null; wsRender(); });
+  await wsSleep(2500);                 // le boîtier peut redémarrer à l'ouverture du port
+  return true;
+}
+function wsSet(k,st,r){ WS.st[k]=st; if(r!==undefined)WS.r[k]=r; wsRender(); }
+async function wsStep(k){
+  if(k===1){ await wsOpen(); wsSet(1,'ok','✓'); return true; }
+  if(k===2){
+    var x=await wsBlock('ID'); var m=x&&/ID: ([0-9A-F]{6})/.exec(x);
+    if(!m)throw new Error(t('ws_timeout'));
+    WS.id=m[1];
+    var fw=/Usine:/.test(x)?'':' · ⚠️ V3.0.7 ?';
+    if(DV[WS.id]&&DV[WS.id].place)throw new Error(WS.id+' — '+t('ws_owned'));
+    wsSet(2,'ok','<b class="mono">'+esc(WS.id)+'</b>'+fw); return true;
+  }
+  if(k===3){
+    var x=await wsBlock('KEYGEN');
+    if(x&&/KEYGEN:EXISTE/.test(x)){
+      if(!confirm(t('ws_force')))throw new Error('—');
+      x=await wsBlock('KEYGEN:FORCE');
+    }
+    var m=x&&/KEYGEN:OK ID=([0-9A-F]{6}) K=([0-9A-F]{64}) R=([0-9A-F]{64})/.exec(x);
+    if(!m)throw new Error(x?'KEYGEN ? (Firmware V3.0.7)':t('ws_timeout'));
+    if(m[1]!==WS.id)throw new Error('ID ≠ '+WS.id);
+    WS.K=m[2]; WS.R=m[3];
+    wsSet(3,'ok','🔑 ✓'); return true;
+  }
+  if(k===4){
+    if(!WS.K||!WS.R)throw new Error('KEYGEN');
+    var r=await sb.rpc('admin_device_register2',{p_device:WS.id,p_key_hex:WS.K,p_rec_hex:WS.R,p_note:null});
+    if(r.error){ var em=r.error.message==='owned'?t('ws_owned'):errText(r.error); throw new Error(em); }
+    WS.K=''; WS.R='';                    // les clés quittent la page
+    await load();
+    wsSet(4,'ok','<span class="pill o">'+t('st_free')+'</span>'); return true;
+  }
+  if(k===5){
+    var host=(MQ.host||'').trim(); if(!host)throw new Error(t('ws_nohost'));
+    var user=(q('ws-user')||{}).value||'TAYOGA-BOX', port=parseInt((q('ws-port')||{}).value||'8883',10), pw=(q('ws-pass')||{}).value||WS.boxPass;
+    if(!pw)throw new Error(t('ws_box_pass')+' ?');
+    WS.boxPass=pw;
+    var cmds=['SETMQTTHOST:'+host,'SETMQTTPORT:'+port,'SETMQTTUSER:'+user.trim(),'SETMQTTPASS:'+pw];
+    if(port===8883)cmds.push('MQTT:TLS:ON');
+    cmds.push('MQTT:ON');
+    for(var i=0;i<cmds.length;i++){ var x=await wsBlock(cmds[i],12000); if(x===null)throw new Error(t('ws_timeout')+' ('+cmds[i].split(':')[0]+')'); }
+    wsSet(5,'ok','<span class="mono">'+esc(user)+' @ '+esc(host)+':'+port+'</span>'); return true;
+  }
+  if(k===6){
+    for(var n=0;n<12;n++){
+      var x=await wsBlock('MQTT:STATUS',8000);
+      if(x&&/Connecte OK/.test(x)){ wsSet(6,'ok','✓ Connecte OK'); return true; }
+      wsSet(6,'run','… '+(n+1)+'/12'); await wsSleep(5000);
+    }
+    throw new Error(t('ws_mqtt_ko'));
+  }
+  if(k===7){ wsSet(7,'ok',''); return true; }
+}
+async function wsRun(from){
+  if(WS.busy)return; WS.busy=true;
+  try{
+    for(var k=from||1;k<=7;k++){
+      wsSet(k,'run','…');
+      try{ await wsStep(k); }
+      catch(e){ wsSet(k,'bad',esc(e&&e.message||String(e))); return; }
+    }
+  } finally { WS.busy=false; wsRender(); }
+}
+function wsNext(){ WS.id=''; WS.K=''; WS.R=''; WS.st={}; WS.r={}; wsRender(); wsRun(2); }
+function wsManual(){
+  var v=q('ser-in').value.trim(); if(!v||!WS.writer)return;
+  if(/^KEYGEN/i.test(v)){ toast('KEYGEN → '+t('ws_go')); return; }   // les clés passent seulement par les étapes
+  wsSend(v); q('ser-in').value='';
+}
+function wsRender(){
+  var e=q('ws-steps'); if(!e)return;
+  var S=[[1,'ws1','ws1s'],[2,'ws2','ws2s'],[3,'ws3','ws3s'],[4,'ws4','ws4s'],[5,'ws5','ws5s'],[6,'ws6','ws6s'],[7,'ws7','ws7s']];
+  var h='<h3>🛠 '+t('atelier')+'</h3>';
+  if(!('serial' in navigator))h+='<div class="err">'+t('ws_noserial')+'</div>';
+  h+=S.map(function(s){
+    var k=s[0], st=WS.st[k]||'', r=WS.r[k]||'', x='';
+    if(k===5)x='<div class="grid2" style="margin-top:6px"><div><div class="lbl">'+t('ws_box_user')+'</div><input class="in mono" id="ws-user" value="TAYOGA-BOX"></div>'+
+      '<div><div class="lbl">'+t('ws_port_dev')+'</div><input class="in mono" id="ws-port" value="8883" inputmode="numeric"></div></div>'+
+      '<div class="lbl">'+t('ws_box_pass')+'</div><input class="in mono" id="ws-pass" type="password" autocomplete="new-password" placeholder="'+(WS.boxPass?'••••••••':'')+'">';
+    if(k===7&&WS.id)x='<div class="lab" id="ws-lab"><b>TAYOGA-'+esc(WS.id)+'</b><small>ID '+esc(WS.id)+' · Wi-Fi TAYOGA-'+esc(WS.id)+'</small></div>'+
+      '<div class="row" style="justify-content:flex-start"><button class="btn o" onclick="window.print()">🖨 '+t('ws_print')+'</button></div>';
+    return '<div class="st '+st+'"><div class="n">'+(st==='ok'?'✓':k)+'</div><div class="c"><b>'+t(s[1])+'</b><small>'+t(s[2])+'</small>'+
+      (r?'<div class="r">'+r+'</div>':'')+x+
+      (st==='bad'?'<div class="row" style="justify-content:flex-start"><button class="btn o" onclick="wsRun('+k+')">↻ '+t('ws_retry')+'</button>'+(k===6?'<button class="btn o" onclick="wsSet(6,\'ok\',\'—\');wsRun(7)">'+t('ws_skip')+'</button>':'')+'</div>':'')+
+      '</div></div>';
+  }).join('');
+  h+='<div class="row">'+(WS.st[7]==='ok'?'<button class="btn g" onclick="wsNext()">➜ '+t('ws_next')+'</button>':'<button class="btn g" '+(WS.busy?'disabled':'')+' onclick="wsRun(WS.port?2:1)">▶ '+t('ws_go')+'</button>')+'</div>';
+  var keep=q('ws-pass')&&q('ws-pass').value;
+  e.innerHTML=h;
+  if(keep&&q('ws-pass'))q('ws-pass').value=keep;
+}
 
 applyLang();
 if(!window.supabase){ showLogin(esc(t('err_net'))); }
